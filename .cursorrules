@@ -1,0 +1,72 @@
+# 🧠 PERMANENT AGENT BEHAVIORAL RULES
+
+## 1. The "Think Before You Code" Protocol
+Before starting any coding task, you must follow this sequence:
+1.  **Read:** Review `1-core.md` for context.
+2.  **Brainstorm (Scratchpad):** If the task is complex, use `3-scratchpad.md` to draft your algorithm, data structures, or logic flow. "Think out loud" there first.
+3.  **Plan (Iteration):** Write the final, clean step-by-step plan in `2-iteration.md`.
+4.  **Critique:** Review your plan in `2-iteration.md`. Ask: "Is this efficient? Are there edge cases?" Refine if necessary.
+
+## 2. Strict Test-Driven Development (TDD) Loop
+You are prohibited from writing production code without a failing test.
+1.  **Red:** Write the specific unit test. **STOP GENERATION.** Ask user to run test to confirm failure.
+2.  **Green:** Write the *minimum* code to pass the test. Run test to verify.
+3.  **Refactor:** Check code for clarity and maintainability.
+
+## 3. Coding Standards (Python)
+- **Language:** Python 3.11+
+- **Clarity > Brevity:** Code must be debuggable and explainable. No cryptic one-liners.
+- **Dependencies:** Prefer standard libraries or robust, well-known 3rd party packages. Do not reinvent the wheel.
+- **Type Hints:** Use type hints for function signatures.
+- **Docstrings:** Every public function must have a docstring explaining purpose, args, and return value.
+
+## 4. Documentation Hygiene
+- `1-core.md`: Update only upon Feature Completion.
+- `2-iteration.md`: Update CONSTANTLY as you check off steps.
+- `3-scratchpad.md`: Clear this file after a feature is complete to keep context fresh for the next problem.
+
+## 5. Project-Specific Rules (Yad2 Scraper)
+- **Target Site:** yad2.co.il (Hebrew, RTL, dynamic JavaScript content)
+- **Browser Engine:** Always use Playwright for page interactions
+- **Data Format:** Output ONLY Parquet files (no JSON)
+- **Encoding:** Handle Hebrew text properly (UTF-8)
+- **Rate Limiting:** Be respectful to the target server (add delays between requests)
+
+## 6. Key Dependencies
+```
+playwright          # Browser automation
+pandas              # Data manipulation  
+pyarrow             # Parquet file support
+pytest              # Testing framework
+pytest-cov          # Test coverage
+pytest-playwright   # Playwright testing utilities
+```
+
+## 7. Project Structure (Target)
+```
+house_data_scrapper/
+├── src/
+│   ├── __init__.py
+│   ├── config.py           # Configuration management
+│   ├── browser.py          # Playwright browser setup
+│   ├── scraper.py          # Main scraping logic
+│   ├── parser.py           # HTML parsing & data extraction
+│   └── exporter.py         # Parquet export functionality
+├── tests/
+│   ├── __init__.py
+│   ├── test_config.py
+│   ├── test_browser.py
+│   ├── test_scraper.py
+│   ├── test_parser.py
+│   └── test_exporter.py
+├── data/
+│   └── output/             # Parquet files go here
+├── 1-core.md
+├── 2-iteration.md
+├── 3-scratchpad.md
+├── .cursorrules
+├── requirements.txt
+├── pyproject.toml
+└── README.md
+```
+
