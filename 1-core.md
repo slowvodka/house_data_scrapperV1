@@ -55,8 +55,8 @@
 
 | Phase | Milestone | Status |
 |-------|-----------|--------|
-| 1 | Project Setup & Environment | 🔲 Pending |
-| 2 | Basic Browser Navigation Module | 🔲 Pending |
+| 1 | Project Setup & Configuration Module | ✅ Complete |
+| 2 | Exporter Module (Parquet output) | 🔄 In Progress |
 | 3 | Search Results Scraper (single page) | 🔲 Pending |
 | 4 | Pagination Handler | 🔲 Pending |
 | 5 | Listing Detail Extractor | 🔲 Pending |
@@ -69,9 +69,7 @@
 
 ## Completed Features
 
-*No features completed yet. This section will be updated as milestones are achieved.*
-
 | Feature | Date Completed | Notes |
 |---------|----------------|-------|
-| — | — | — |
+| Configuration Module | 2025-12-12 | ScraperConfig with validation, 17 tests passing |
 
