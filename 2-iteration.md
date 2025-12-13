@@ -15,16 +15,24 @@
 
 **Result:** 94 tests passing
 
-### Step 2: Quick Parameter Experiments
-- [ ] Test `type` parameter: try values other than `"home"`
-- [ ] Test `categoryId` parameter: try `1`, `3`, etc.
-- [ ] Document findings
+### Step 2: Quick Parameter Experiments ✅ DONE
+- [x] Test `type` parameter: only `home` and `item` valid (`item` needs itemId)
+- [x] Test `categoryId` parameter: only `2` valid (API enforces)
+- [x] Document findings
 
-### Step 3: Investigate Map Endpoint (The Zoom Mystery)
-- [ ] Open browser DevTools on yad2.co.il
-- [ ] Change zoom level, observe Network tab
-- [ ] Identify which endpoint serves the map data
-- [ ] Document the endpoint and parameters
+**Result:** No additional data from these params - API is locked down
+
+### Step 3: Investigate Map Endpoint (The Zoom Mystery) ⚠️ BLOCKED
+- [x] Tested 15+ endpoint variations (feed-search, map, markers, etc.) - all 404
+- [x] Tested geo params (lat, lon, bounds) - "not allowed"
+- [x] Tested count=1000 - still only returns ~55 results (server-side cap)
+- [ ] Need Playwright to capture actual XHR requests from browser
+
+**Findings:**
+- API is hardcoded to ~55-60 results per property type per city
+- No alternative endpoints found via HTTP testing
+- Map likely uses WebSocket, Mapbox tiles, or browser-only endpoints
+- **Requires Playwright intercept to discover the real endpoint**
 
 ### Step 4: Implement New Endpoint (if found)
 - [ ] Add new endpoint to `api_client.py`
