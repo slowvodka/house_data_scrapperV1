@@ -1,44 +1,38 @@
 # 🧪 Scratchpad
 
-> **Purpose:** Raw thinking space. Write here BEFORE coding.  
-> **Rule:** Clear after each feature is complete.
+> Think here BEFORE coding. Clear after feature complete.
 
 ---
 
-## What Belongs Here
+## Zoom Mystery Analysis
 
-✅ **DO write:**
-- Algorithm drafts / pseudo-code
-- Edge cases to handle
-- Data structure designs
-- "What could go wrong?" analysis
-- Decision reasoning (why X over Y?)
-- Quick calculations or estimates
+### Facts
+- Website URL `?zoom=1` shows thousands of map markers
+- Our API (`/recommendations/items/realestate`) returns ~60 per property type
+- API rejects: `zoom`, `page`, `offset`, `lat`, `lon`, `bounds`
+- Tested 15+ endpoint guesses → all 404
 
-❌ **DON'T write:**
-- Final plans (that's `2-iteration.md`)
-- Project status (that's `1-core.md`)
-- Polished documentation
+### Hypotheses
 
----
+**H1: Different endpoint**
+- Map uses `/feed/`, `/search/`, or `/map/` instead of `/recommendations/`
+- Result: Not found via guessing
 
-## Current Thinking Space
+**H2: Mapbox vector tiles**
+- Map is Mapbox-based
+- Listing data might be embedded in `.pbf` vector tiles
+- Would explain why we can't find a JSON endpoint
 
-### NEXT SESSION: Zoom Parameter Investigation
+**H3: WebSocket**
+- Real-time map data via WebSocket connection
+- Need to check WS tab in DevTools
 
-**Hypothesis:** The `zoom` URL parameter controls how many results the API returns.
+**H4: Client-side aggregation**
+- Browser might make many small requests
+- JavaScript aggregates into map display
 
-**Plan for next session:**
-1. Open browser DevTools on `https://www.yad2.co.il/realestate/forsale?zoom=1`
-2. Watch Network tab while changing zoom levels
-3. Capture the exact API call made when zoom changes
-4. Look for differences in request parameters or endpoint
-5. Implement in our scraper if successful
-
-**What to look for:**
-- Different API endpoint when map zooms?
-- Additional parameters sent with zoom?
-- WebSocket messages?
-- Changes in response size/count?
+### Next Step
+Watch DevTools Network tab while interacting with the map.
+Observe ALL traffic types (XHR, WS, Fetch, Other).
 
 ---
