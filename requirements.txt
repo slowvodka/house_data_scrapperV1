@@ -1,7 +1,10 @@
 # Yad2 Real Estate Scraper - Dependencies
 # Python 3.11+ required
 
-# Browser Automation
+# HTTP Client
+requests>=2.31.0
+
+# Browser Automation (optional - for fallback)
 playwright>=1.40.0
 
 # Data Processing
@@ -12,6 +15,7 @@ pyarrow>=14.0.0
 pytest>=7.4.0
 pytest-cov>=4.1.0
 pytest-playwright>=0.4.0
+responses>=0.24.0  # For mocking requests
 
 # Development (optional)
 black>=23.0.0

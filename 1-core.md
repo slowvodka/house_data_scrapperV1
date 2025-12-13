@@ -56,7 +56,11 @@
 | Phase | Milestone | Status |
 |-------|-----------|--------|
 | 1 | Project Setup & Configuration Module | ✅ Complete |
-| 2 | Exporter Module (Parquet output) | 🔄 In Progress |
+| 2 | Exporter Module (Parquet output) | ✅ Complete |
+| 3 | Parser Module (HTML data extraction) | ⬜ Next |
+| 4 | Browser Module (Playwright setup) | ⬜ Pending |
+| 5 | Scraper Module (Navigation & pagination) | ⬜ Pending |
+| 6 | Integration & CLI | ⬜ Pending |
 | 3 | Search Results Scraper (single page) | 🔲 Pending |
 | 4 | Pagination Handler | 🔲 Pending |
 | 5 | Listing Detail Extractor | 🔲 Pending |
@@ -71,5 +75,7 @@
 
 | Feature | Date Completed | Notes |
 |---------|----------------|-------|
-| Configuration Module | 2025-12-12 | ScraperConfig with validation, 17 tests passing |
+| Configuration Module | 2025-12-12 | ScraperConfig with validation, 17 tests |
+| Data Models | 2025-12-12 | Listing dataclass with 20 fields |
+| Exporter Module | 2025-12-12 | ParquetExporter with explicit schema, 11 tests |
 

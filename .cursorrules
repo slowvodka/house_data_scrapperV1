@@ -25,21 +25,63 @@ You are prohibited from writing production code without a failing test.
 - `2-iteration.md`: Update CONSTANTLY as you check off steps.
 - `3-scratchpad.md`: Clear this file after a feature is complete to keep context fresh for the next problem.
 
+## 4b. Git Commit Discipline 🔴 CRITICAL
+**Commit frequently to create rollback points and track progress.**
+
+### When to Commit:
+1. **After TDD GREEN phase:** When tests pass for a new feature/module
+2. **After REFACTOR phase:** When code is cleaned up (separate commit from feature)
+3. **After bug fixes:** Each fix gets its own commit
+4. **After documentation updates:** Keep docs in sync with code
+
+### Commit Message Format (Conventional Commits):
+```
+<type>(<scope>): <short description>
+
+Types: feat, fix, refactor, docs, test, chore
+Scope: module name (config, parser, exporter, api_client, scraper)
+```
+
+### Examples:
+- `feat(config): add ScraperConfig with validation`
+- `feat(parser): add ListingParser with JSON extraction`
+- `fix(exporter): handle empty listings gracefully`
+- `refactor(api_client): extract URL building to method`
+- `docs: update 1-core.md with Phase 2 completion`
+- `test(parser): add edge case tests for missing fields`
+
+### Workflow Integration:
+```
+TDD Loop:
+  RED → GREEN → REFACTOR → COMMIT → next test
+                              ↑
+                         Don't skip this!
+```
+
+### Tagging Milestones:
+After completing a major phase, create a tag:
+```bash
+git tag -a v0.1.0 -m "Phase 1: Config + Models complete"
+git tag -a v0.2.0 -m "Phase 2: Exporter complete"
+```
+
 ## 5. Project-Specific Rules (Yad2 Scraper)
-- **Target Site:** yad2.co.il (Hebrew, RTL, dynamic JavaScript content)
-- **Browser Engine:** Always use Playwright for page interactions
+- **Target Site:** yad2.co.il (Hebrew, RTL)
+- **Primary Method:** API requests to `gw.yad2.co.il/recommendations/items/realestate`
+- **Fallback:** Playwright browser automation (if API is blocked)
 - **Data Format:** Output ONLY Parquet files (no JSON)
 - **Encoding:** Handle Hebrew text properly (UTF-8)
 - **Rate Limiting:** Be respectful to the target server (add delays between requests)
 
 ## 6. Key Dependencies
 ```
-playwright          # Browser automation
+requests            # HTTP client (primary)
+playwright          # Browser automation (fallback)
 pandas              # Data manipulation  
 pyarrow             # Parquet file support
 pytest              # Testing framework
 pytest-cov          # Test coverage
-pytest-playwright   # Playwright testing utilities
+responses           # Mock HTTP requests in tests
 ```
 
 ## 7. Project Structure (Target)
@@ -48,17 +90,19 @@ house_data_scrapper/
 ├── src/
 │   ├── __init__.py
 │   ├── config.py           # Configuration management
-│   ├── browser.py          # Playwright browser setup
-│   ├── scraper.py          # Main scraping logic
-│   ├── parser.py           # HTML parsing & data extraction
-│   └── exporter.py         # Parquet export functionality
+│   ├── models.py           # Listing dataclass
+│   ├── api_client.py       # HTTP client for Yad2 API
+│   ├── parser.py           # JSON parsing & data extraction
+│   ├── exporter.py         # Parquet export functionality
+│   ├── scraper.py          # Main orchestration logic
+│   └── browser.py          # Playwright browser (fallback)
 ├── tests/
 │   ├── __init__.py
 │   ├── test_config.py
-│   ├── test_browser.py
-│   ├── test_scraper.py
+│   ├── test_api_client.py
 │   ├── test_parser.py
-│   └── test_exporter.py
+│   ├── test_exporter.py
+│   └── test_scraper.py
 ├── data/
 │   └── output/             # Parquet files go here
 ├── 1-core.md
