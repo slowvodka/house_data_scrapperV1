@@ -40,13 +40,13 @@ class TestApiClientUrlBuilder:
         assert "cityValues=9000" in url
         assert config.api_base_url in url
 
-    def test_build_url_with_pagination(self):
-        """Should build URL with page offset parameter."""
+    def test_build_url_with_property_type(self):
+        """Should build URL with property type parameter."""
         config = ScraperConfig(results_per_page=20)
         client = Yad2ApiClient(config)
-        url = client.build_url(city_id=9000, page=2)
-        # Page 2 with 20 results per page = offset 20
-        assert "page=2" in url or "offset=20" in url
+        url = client.build_url(city_id=9000, property_type=4)
+        # Property type 4 = Penthouse
+        assert "subCategoriesIds=4" in url
 
     def test_build_url_includes_required_params(self):
         """URL should include required API parameters."""

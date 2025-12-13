@@ -79,42 +79,52 @@ class TestScraperInitialization:
 class TestScrapeSingleCity:
     """Test scraping a single city."""
 
-    def test_scrape_city_single_page(self):
-        """Should fetch and parse a single page of listings."""
+    def test_scrape_city_fetches_all_property_types(self):
+        """Should fetch all property types for a city."""
         config = ScraperConfig(cities=["באר שבע"], results_per_page=40)
         
-        # Mock API client to return less than full page (end of results)
+        # Mock API client to return listings for each property type
         api_client = Mock(spec=Yad2ApiClient)
         api_client.fetch_listings.return_value = make_api_response(10)
         
-        # Real parser to test integration
-        parser = ListingParser()
-        exporter = Mock(spec=ParquetExporter)
+        # Mock PROPERTY_TYPES to match real implementation
+        with patch.object(Yad2ApiClient, 'PROPERTY_TYPES', [1, 2, 4, 5, 6, 7]):
+            # Real parser to test integration
+            parser = ListingParser()
+            exporter = Mock(spec=ParquetExporter)
 
-        scraper = Yad2Scraper(
-            config=config,
-            api_client=api_client,
-            parser=parser,
-            exporter=exporter,
-        )
+            scraper = Yad2Scraper(
+                config=config,
+                api_client=api_client,
+                parser=parser,
+                exporter=exporter,
+            )
 
-        listings = scraper.scrape_city("באר שבע")
+            with patch("time.sleep"):
+                listings = scraper.scrape_city("באר שבע")
 
+        # 6 property types × 10 listings each, but deduplicated by URL
+        # Since all mock listings have same tokens, only 10 unique
         assert len(listings) == 10
         assert all(isinstance(l, Listing) for l in listings)
-        # Should only call API once (10 < 40, so no more pages)
-        api_client.fetch_listings.assert_called_once()
+        # Should call API 6 times (once per property type)
+        assert api_client.fetch_listings.call_count == 6
 
-    def test_scrape_city_multiple_pages(self):
-        """Should paginate and fetch all pages."""
+    def test_scrape_city_deduplicates_listings(self):
+        """Should deduplicate listings by URL across property types."""
         config = ScraperConfig(cities=["באר שבע"], results_per_page=10)
         
         api_client = Mock(spec=Yad2ApiClient)
-        # First call: full page (10 items) → more pages
-        # Second call: partial page (5 items) → done
+        # Different property types return overlapping listings
+        # First type returns 3 listings (token_0, token_1, token_2)
+        # Second type returns 2 listings (token_0, token_1) - duplicates
         api_client.fetch_listings.side_effect = [
-            make_api_response(10),
-            make_api_response(5),
+            make_api_response(3),  # Type 1: 3 listings
+            make_api_response(2),  # Type 2: 2 duplicates
+            make_api_response(0),  # Types 4,5,6,7: empty
+            make_api_response(0),
+            make_api_response(0),
+            make_api_response(0),
         ]
         
         parser = ListingParser()
@@ -127,12 +137,13 @@ class TestScrapeSingleCity:
             exporter=exporter,
         )
 
-        # Patch sleep to avoid delays in tests
         with patch("time.sleep"):
-            listings = scraper.scrape_city("באר שבע")
+            with patch.object(Yad2ApiClient, 'PROPERTY_TYPES', [1, 2, 4, 5, 6, 7]):
+                listings = scraper.scrape_city("באר שבע")
 
-        assert len(listings) == 15  # 10 + 5
-        assert api_client.fetch_listings.call_count == 2
+        # Only 3 unique listings (duplicates removed)
+        assert len(listings) == 3
+        assert api_client.fetch_listings.call_count == 6
 
     def test_scrape_city_empty_results(self):
         """Should handle city with no listings."""
@@ -172,10 +183,14 @@ class TestScrapeSingleCity:
             exporter=exporter,
         )
 
-        scraper.scrape_city("באר שבע")
+        with patch("time.sleep"):
+            with patch.object(Yad2ApiClient, 'PROPERTY_TYPES', [1, 2, 4, 5, 6, 7]):
+                scraper.scrape_city("באר שבע")
 
-        # Beer Sheva ID is 9000
-        api_client.fetch_listings.assert_called_with(9000, 1)
+        # Beer Sheva ID is 9000, first property type is 1
+        # Check that city_id 9000 was used in all calls
+        calls = api_client.fetch_listings.call_args_list
+        assert all(call[0][0] == 9000 for call in calls)
 
 
 class TestScrapeMultipleCities:
@@ -189,7 +204,7 @@ class TestScrapeMultipleCities:
         )
         
         api_client = Mock(spec=Yad2ApiClient)
-        # Each city returns 5 listings
+        # Each property type returns 5 listings
         api_client.fetch_listings.return_value = make_api_response(5)
         
         parser = ListingParser()
@@ -203,24 +218,30 @@ class TestScrapeMultipleCities:
         )
 
         with patch("time.sleep"):
-            listings = scraper.scrape_all_cities()
+            with patch.object(Yad2ApiClient, 'PROPERTY_TYPES', [1, 2, 4, 5, 6, 7]):
+                listings = scraper.scrape_all_cities()
 
-        assert len(listings) == 10  # 5 per city × 2 cities
-        # API called twice (once per city)
-        assert api_client.fetch_listings.call_count == 2
+        # 5 unique listings per city (deduplicated) × 2 cities = 10
+        assert len(listings) == 10
+        # API called 6 times per city × 2 cities = 12
+        assert api_client.fetch_listings.call_count == 12
 
     def test_scrape_all_cities_continues_on_error(self):
-        """Should continue scraping if one city fails."""
+        """Should continue scraping if one property type fails."""
         config = ScraperConfig(
-            cities=["באר שבע", "תל אביב"],
+            cities=["באר שבע"],
             results_per_page=40,
         )
         
         api_client = Mock(spec=Yad2ApiClient)
-        # First city fails, second succeeds
+        # First property type fails, rest succeed
         api_client.fetch_listings.side_effect = [
-            Exception("API Error"),
-            make_api_response(5),
+            Exception("API Error"),  # Type 1 fails
+            make_api_response(5),    # Type 2 succeeds
+            make_api_response(0),    # Types 4,5,6,7 empty
+            make_api_response(0),
+            make_api_response(0),
+            make_api_response(0),
         ]
         
         parser = ListingParser()
@@ -234,12 +255,13 @@ class TestScrapeMultipleCities:
         )
 
         with patch("time.sleep"):
-            listings = scraper.scrape_all_cities()
+            with patch.object(Yad2ApiClient, 'PROPERTY_TYPES', [1, 2, 4, 5, 6, 7]):
+                listings = scraper.scrape_all_cities()
 
-        # Should get 5 listings from the successful city
+        # Should get 5 listings from the successful property type
         assert len(listings) == 5
-        # Both cities were attempted
-        assert api_client.fetch_listings.call_count == 2
+        # All property types were attempted
+        assert api_client.fetch_listings.call_count == 6
 
 
 class TestScraperRun:
@@ -342,8 +364,8 @@ class TestScraperRun:
 class TestScraperRateLimiting:
     """Test rate limiting behavior."""
 
-    def test_scrape_city_applies_delay_between_pages(self):
-        """Should add delay between page fetches."""
+    def test_scrape_city_applies_delay_between_property_types(self):
+        """Should add delay between property type fetches."""
         config = ScraperConfig(
             cities=["באר שבע"],
             results_per_page=10,
@@ -352,10 +374,7 @@ class TestScraperRateLimiting:
         )
         
         api_client = Mock(spec=Yad2ApiClient)
-        api_client.fetch_listings.side_effect = [
-            make_api_response(10),  # Full page → more
-            make_api_response(5),   # Partial → done
-        ]
+        api_client.fetch_listings.return_value = make_api_response(5)
         
         parser = ListingParser()
         exporter = Mock(spec=ParquetExporter)
@@ -368,8 +387,9 @@ class TestScraperRateLimiting:
         )
 
         with patch("time.sleep") as mock_sleep:
-            scraper.scrape_city("באר שבע")
-            # Should sleep once between pages
-            assert mock_sleep.call_count >= 1
+            with patch.object(Yad2ApiClient, 'PROPERTY_TYPES', [1, 2, 4, 5, 6, 7]):
+                scraper.scrape_city("באר שבע")
+            # Should sleep between property types (6 types = 6 sleeps)
+            assert mock_sleep.call_count == 6
 
 

@@ -168,9 +168,9 @@ class TestScraperConfigAPISettings:
         assert config.request_timeout == 30
 
     def test_config_has_default_results_per_page(self):
-        """Config should have default results per page of 40."""
+        """Config should have default results per page of 500 (API max)."""
         config = ScraperConfig()
-        assert config.results_per_page == 40
+        assert config.results_per_page == 500
 
     def test_config_accepts_custom_results_per_page(self):
         """Config should accept custom results per page."""

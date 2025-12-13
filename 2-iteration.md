@@ -2,74 +2,60 @@
 
 ## Current Session Goal
 
-**Phase 6: Scraper Module** 🔄 IN PROGRESS (paused for investigation)
+**Improve scraping results** - Get more than 574 listings
 
 ---
 
-## ⚠️ Current State: Tests Need Update
+## 📋 Session Plan
 
-During API debugging, we made breaking changes:
-- Removed `page` parameter (API doesn't support pagination)
-- Added `property_type` parameter to fetch all property types
-- Changed scraper logic to loop through property types
+### Step 1: Fix Technical Debt (Tests) ✅ DONE
+- [x] Run `pytest tests/ -v`
+- [x] Fix any broken tests in `test_api_client.py`
+- [x] Fix any broken tests in `test_scraper.py`
 
-**Tests written but likely broken** - need to run and fix before Phase 6 is complete.
+**Result:** 94 tests passing
 
----
+### Step 2: Quick Parameter Experiments
+- [ ] Test `type` parameter: try values other than `"home"`
+- [ ] Test `categoryId` parameter: try `1`, `3`, etc.
+- [ ] Document findings
 
-## 🔬 Next Steps (Priority Order)
+### Step 3: Investigate Map Endpoint (The Zoom Mystery)
+- [ ] Open browser DevTools on yad2.co.il
+- [ ] Change zoom level, observe Network tab
+- [ ] Identify which endpoint serves the map data
+- [ ] Document the endpoint and parameters
 
-### 1. Run Tests & Fix Breakages
-```bash
-python -m pytest tests/ -v
-```
-
-### 2. Investigate Untested API Parameters
-
-| Parameter | Current Value | To Test | Notes |
-|-----------|---------------|---------|-------|
-| `type` | `"home"` | Other values? | May unlock different listing types |
-| `categoryId` | `2` | `1`, `3`, etc.? | `2` = for sale, others = rentals? |
-| `zoom` | Not used | **INVESTIGATE** | Works on website URL but rejected by API |
-
-### 3. The Zoom Mystery 🔍
-
-**Observation:** `https://www.yad2.co.il/realestate/forsale?zoom=1` shows thousands of map points, but API rejects `zoom` parameter.
-
-**To investigate:**
-- Use browser dev tools to capture API calls when changing zoom
-- Look for map-specific endpoints
-- Consider Playwright to intercept XHR requests
+### Step 4: Implement New Endpoint (if found)
+- [ ] Add new endpoint to `api_client.py`
+- [ ] Update tests
+- [ ] Run full scrape and compare results
 
 ---
 
-## Session Work Done (Not Committed)
+## Known Context
 
-| Task | Status | Notes |
-|------|--------|-------|
-| Debug API authentication | ✅ Done | Need cookies from main site |
-| Discover `page` not allowed | ✅ Done | API doesn't paginate |
-| Test `subCategoriesIds` | ✅ Done | Valid: 1, 2, 4, 5, 6, 7 |
-| Fetch all property types | ✅ Done | 162 → 574 listings |
-| Update tests | ❌ TODO | Tests likely broken |
+**Current endpoint:** `https://gw.yad2.co.il/recommendations/items/realestate`
+
+**Parameters tested:**
+| Parameter | Values | Result |
+|-----------|--------|--------|
+| `subCategoriesIds` | 1,2,4,5,6,7 | ✅ All work |
+| `page`, `offset`, `zoom` | - | ❌ Rejected |
+| `type` | "home" | ❓ Untested others |
+| `categoryId` | 2 | ❓ Untested others |
 
 ---
 
 ## Completed Phases
 
-| Phase | Module | Tests | Date | Status |
-|-------|--------|-------|------|--------|
-| 1 | Configuration | 17 | 2025-12-12 | ✅ |
-| 2 | Data Models | - | 2025-12-12 | ✅ |
-| 3 | Exporter | 11 | 2025-12-12 | ✅ |
-| 4 | API Client | 15 | 2025-12-13 | ⚠️ Tests need update |
-| 5 | Parser | 28 | 2025-12-13 | ✅ |
-| 6 | Scraper | 12 | 2025-12-13 | ⚠️ Tests need update |
+| Phase | Module | Status |
+|-------|--------|--------|
+| 1 | Config | ✅ |
+| 2 | Models | ✅ |
+| 3 | Exporter | ✅ |
+| 4 | API Client | ⚠️ Tests need fix |
+| 5 | Parser | ✅ |
+| 6 | Scraper | ⚠️ Tests need fix |
 
 ---
-
-## Known Limitations
-
-- API capped at ~60 items per property type per city
-- No pagination support
-- Zoom parameter mystery unresolved
