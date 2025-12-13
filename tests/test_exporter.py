@@ -28,9 +28,19 @@ def sample_listings():
             rooms=3.5,
             floor=5,
             sqm=85,
+            address="דיזנגוף 50",
             neighborhood="הצפון הישן",
             asset_type="דירה",
             description="דירה מרווחת ומוארת",
+            total_floors=8,
+            year_built=1995,
+            elevator=True,
+            parking=1,
+            balconies=2,
+            mamad=True,
+            storage_unit=False,
+            condition="שמור",
+            entrance_date="גמיש",
         ),
         Listing(
             city="תל אביב",
@@ -40,9 +50,19 @@ def sample_listings():
             rooms=4.0,
             floor=2,
             sqm=110,
+            address="אינשטיין 15",
             neighborhood="רמת אביב",
             asset_type="דירת גן",
             description="דירת גן עם גינה גדולה",
+            total_floors=4,
+            year_built=2020,
+            elevator=True,
+            parking=2,
+            balconies=1,
+            mamad=True,
+            storage_unit=True,
+            condition="חדש",
+            entrance_date="מיידי",
         ),
     ]
 
@@ -83,8 +103,11 @@ class TestParquetExporterConversion:
         df = exporter.to_dataframe(sample_listings)
 
         expected_columns = [
-            "city", "url", "scraped_at", "price", "rooms",
-            "floor", "sqm", "neighborhood", "asset_type", "description"
+            "city", "url", "scraped_at",
+            "price", "rooms", "floor", "sqm", "address", "neighborhood", "asset_type", "description",
+            "total_floors", "year_built", "elevator",
+            "parking", "balconies", "mamad", "storage_unit", "condition",
+            "entrance_date"
         ]
         assert list(df.columns) == expected_columns
 
@@ -138,6 +161,52 @@ class TestParquetExporterSave:
         exporter.export(sample_listings, output_path)
 
         assert os.path.exists(output_path)
+
+
+class TestParquetExporterSchema:
+    """Test Parquet schema definition."""
+
+    def test_exported_parquet_has_correct_schema(self, sample_listings, temp_output_dir):
+        """Exported Parquet file should have explicitly defined schema."""
+        import pyarrow.parquet as pq
+
+        exporter = ParquetExporter()
+        output_path = os.path.join(temp_output_dir, "schema_test.parquet")
+
+        exporter.export(sample_listings, output_path)
+
+        # Read schema from file
+        parquet_file = pq.read_table(output_path)
+        schema = parquet_file.schema
+
+        # Verify key column types
+        assert schema.field("price").type == "int64" or str(schema.field("price").type).startswith("int")
+        assert schema.field("rooms").type == "double" or str(schema.field("rooms").type).startswith("float")
+        assert schema.field("elevator").type == "bool"
+        assert str(schema.field("city").type) == "string" or str(schema.field("city").type) == "large_string"
+
+    def test_schema_handles_null_values_correctly(self, temp_output_dir):
+        """Schema should properly handle null values in optional fields."""
+        import pyarrow.parquet as pq
+
+        exporter = ParquetExporter()
+        output_path = os.path.join(temp_output_dir, "nulls_test.parquet")
+
+        # Create listing with many null fields
+        listing = Listing(
+            city="Test City",
+            url="https://test.com",
+            scraped_at=datetime.now(),
+            # All other fields are None
+        )
+
+        exporter.export([listing], output_path)
+
+        # Should be readable without errors
+        df = pd.read_parquet(output_path)
+        assert len(df) == 1
+        assert pd.isna(df.iloc[0]["price"])
+        assert pd.isna(df.iloc[0]["elevator"])
 
 
 class TestParquetExporterEdgeCases:
