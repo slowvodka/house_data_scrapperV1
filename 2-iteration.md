@@ -22,17 +22,15 @@
 
 **Result:** No additional data from these params - API is locked down
 
-### Step 3: Investigate Map Endpoint (The Zoom Mystery) ⚠️ BLOCKED
-- [x] Tested 15+ endpoint variations (feed-search, map, markers, etc.) - all 404
-- [x] Tested geo params (lat, lon, bounds) - "not allowed"
-- [x] Tested count=1000 - still only returns ~55 results (server-side cap)
-- [ ] Need Playwright to capture actual XHR requests from browser
+### Step 3: Investigate Zoom Parameter 🔄 NEXT SESSION
+- [x] Tested 15+ endpoint variations - all 404
+- [x] Tested geo params (lat, lon, bounds) - "not allowed" on recommendations API
+- [ ] **NEXT:** Use Playwright to capture how zoom affects API responses
+- [ ] **NEXT:** Watch Network tab when changing zoom on yad2 map
 
-**Findings:**
-- API is hardcoded to ~55-60 results per property type per city
-- No alternative endpoints found via HTTP testing
-- Map likely uses WebSocket, Mapbox tiles, or browser-only endpoints
-- **Requires Playwright intercept to discover the real endpoint**
+**Key Insight:**
+The `zoom` parameter on the website URL likely controls result count.
+Need to capture what API call the browser makes when zoom changes.
 
 ### Step 4: Implement New Endpoint (if found)
 - [ ] Add new endpoint to `api_client.py`
