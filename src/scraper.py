@@ -69,9 +69,13 @@ class Yad2Scraper:
         Returns:
             Fully configured Yad2Scraper instance.
         """
+        api_client = Yad2ApiClient(config)
+        # Initialize session to get cookies before API calls
+        api_client.init_session()
+        
         return cls(
             config=config,
-            api_client=Yad2ApiClient(config),
+            api_client=api_client,
             parser=ListingParser(),
             exporter=ParquetExporter(),
         )
@@ -80,38 +84,43 @@ class Yad2Scraper:
         """
         Scrape all listings for a single city.
 
-        Handles pagination automatically by fetching pages until
-        fewer results than the page size are returned.
+        Fetches all property types (apartments, penthouses, houses, etc.)
+        and deduplicates by listing token.
 
         Args:
             city_name: City name in Hebrew (e.g., "באר שבע").
 
         Returns:
-            List of Listing objects for the city.
+            List of unique Listing objects for the city.
 
         Raises:
             ValueError: If city name is not recognized.
         """
+        from src.api_client import Yad2ApiClient
+        
         city_id = self.config.get_city_id(city_name)
         all_listings: List[Listing] = []
-        page = 1
-
-        while True:
-            # Fetch page of listings
-            response = self.api_client.fetch_listings(city_id, page)
-            listings = self.parser.parse_response(response, city_name)
-            all_listings.extend(listings)
-
-            # Check if we've reached the last page
-            # If fewer listings than page size, no more pages
-            if len(listings) < self.config.results_per_page:
-                break
-
-            # Move to next page with rate limiting
-            page += 1
-            delay = self.config.get_random_delay()
-            time.sleep(delay)
-
+        seen_urls: set = set()  # Track unique listings by URL
+        
+        # Fetch all property types
+        for property_type in Yad2ApiClient.PROPERTY_TYPES:
+            try:
+                response = self.api_client.fetch_listings(city_id, property_type)
+                listings = self.parser.parse_response(response, city_name)
+                
+                # Add only unique listings (by URL/token)
+                for listing in listings:
+                    if listing.url not in seen_urls:
+                        seen_urls.add(listing.url)
+                        all_listings.append(listing)
+                
+                # Small delay between property type requests
+                time.sleep(0.5)
+                
+            except Exception as e:
+                print(f"  Error fetching type {property_type}: {e}")
+                continue
+        
         return all_listings
 
     def scrape_all_cities(self) -> List[Listing]:

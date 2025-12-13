@@ -77,13 +77,36 @@ class Yad2ApiClient:
 
         return session
 
-    def build_url(self, city_id: int, page: int = 1) -> str:
+    def init_session(self) -> None:
+        """
+        Initialize the session by visiting the main Yad2 website.
+
+        This is required to obtain session cookies/tokens before
+        making API calls. Call this once before fetch_listings().
+        """
+        # Visit the main real estate page to get cookies
+        init_url = "https://www.yad2.co.il/realestate/forsale"
+        try:
+            response = self.session.get(
+                init_url,
+                timeout=self.config.request_timeout,
+            )
+            response.raise_for_status()
+            print(f"Session initialized (got {len(self.session.cookies)} cookies)")
+        except requests.exceptions.RequestException as e:
+            print(f"Session init warning: {e}")
+
+    # Valid property type IDs (subCategoriesIds)
+    # 1=Apartment, 2=Garden Apt, 4=Penthouse, 5=Duplex, 6=Roof Apt, 7=House/Cottage
+    PROPERTY_TYPES = [1, 2, 4, 5, 6, 7]
+
+    def build_url(self, city_id: int, property_type: int = 1) -> str:
         """
         Build the API URL with query parameters.
 
         Args:
             city_id: Yad2 city ID to search.
-            page: Page number for pagination (1-based).
+            property_type: Property type ID (subCategoriesIds).
 
         Returns:
             Complete URL string with query parameters.
@@ -91,24 +114,25 @@ class Yad2ApiClient:
         params = {
             "type": "home",
             "categoryId": 2,  # Real estate for sale
-            "subCategoriesIds": 1,  # Apartments
+            "subCategoriesIds": property_type,
             "cityValues": city_id,
             "count": self.config.results_per_page,
-            "page": page,
+            # Note: This API doesn't support pagination
         }
 
         query_string = urlencode(params)
         return f"{self.config.api_base_url}?{query_string}"
 
-    def fetch_listings(
-        self, city_id: int, page: int = 1
-    ) -> Dict[str, Any]:
+    def fetch_listings(self, city_id: int, property_type: int = 1) -> Dict[str, Any]:
         """
-        Fetch listings from the Yad2 API.
+        Fetch listings from the Yad2 API for a city and property type.
+
+        Note: This recommendations API returns ~60 items per property type.
+        Call with different property_type values to get more results.
 
         Args:
             city_id: Yad2 city ID to search.
-            page: Page number for pagination (1-based).
+            property_type: Property type ID (1-7). See PROPERTY_TYPES.
 
         Returns:
             Parsed JSON response from the API.
@@ -116,7 +140,7 @@ class Yad2ApiClient:
         Raises:
             requests.exceptions.RequestException: On HTTP errors.
         """
-        url = self.build_url(city_id, page)
+        url = self.build_url(city_id, property_type)
 
         try:
             response = self.session.get(
@@ -131,9 +155,7 @@ class Yad2ApiClient:
             # Re-raise for the caller to handle
             raise
 
-    def fetch_listings_for_city(
-        self, city_name: str, page: int = 1
-    ) -> Dict[str, Any]:
+    def fetch_listings_for_city(self, city_name: str) -> Dict[str, Any]:
         """
         Fetch listings using city name instead of ID.
 
@@ -141,7 +163,6 @@ class Yad2ApiClient:
 
         Args:
             city_name: City name in Hebrew (e.g., "באר שבע").
-            page: Page number for pagination (1-based).
 
         Returns:
             Parsed JSON response from the API.
@@ -151,7 +172,7 @@ class Yad2ApiClient:
             requests.exceptions.RequestException: On HTTP errors.
         """
         city_id = self.config.get_city_id(city_name)
-        return self.fetch_listings(city_id, page)
+        return self.fetch_listings(city_id)
 
     def close(self) -> None:
         """

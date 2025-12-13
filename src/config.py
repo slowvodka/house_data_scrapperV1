@@ -24,6 +24,7 @@ CITY_ID_MAP: Dict[str, int] = {
     "חולון": 6600,
     "בני ברק": 6200,
     "רמת גן": 8600,
+    "גבעתיים": 6300,
     "אשקלון": 2100,
     "רחובות": 8400,
     "בת ים": 6100,
@@ -72,8 +73,8 @@ class ScraperConfig:
     max_retries: int = 3
     retry_delay: float = 2.0  # base delay for exponential backoff
 
-    # Pagination
-    results_per_page: int = 40  # Max results per API call
+    # Results count (API doesn't support pagination, so fetch all at once)
+    results_per_page: int = 500  # High value to get all results
 
     # Legacy - keeping for backwards compatibility with tests
     page_timeout: int = 30000  # milliseconds (deprecated)
