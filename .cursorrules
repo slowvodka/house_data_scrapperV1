@@ -1,11 +1,37 @@
 # 🧠 PERMANENT AGENT BEHAVIORAL RULES
 
-## 1. The "Think Before You Code" Protocol
-Before starting any coding task, you must follow this sequence:
-1.  **Read:** Review `1-core.md` for context.
-2.  **Brainstorm (Scratchpad):** If the task is complex, use `3-scratchpad.md` to draft your algorithm, data structures, or logic flow. "Think out loud" there first.
-3.  **Plan (Iteration):** Write the final, clean step-by-step plan in `2-iteration.md`.
-4.  **Critique:** Review your plan in `2-iteration.md`. Ask: "Is this efficient? Are there edge cases?" Refine if necessary.
+## 1. The 3-File Context Cycle (MANDATORY)
+
+🛑 **Every response must start with a Context Check:**
+
+> **Context Check:**
+> 1. [ ] **Brainstorm:** Have I updated `3-scratchpad.md` with my analysis?
+> 2. [ ] **Plan:** Is `2-iteration.md` up to date with the next steps?
+>
+> *If "No" to either, perform updates before writing code.*
+
+### The Cycle (No Exceptions)
+
+```
+New Task → Brainstorm → Plan → Execute → Update Docs → Clear Scratchpad
+              ↓           ↓        ↓
+         3-scratchpad  2-iteration  Code + Tests
+```
+
+**Step 1: BRAINSTORM (File: `3-scratchpad.md`)**
+- **WHEN:** BEFORE any code or planning
+- **CONTENT:** Algorithm drafts, edge cases, data structures, pseudo-code, "what could go wrong?"
+- **GOAL:** Prove understanding before solving
+
+**Step 2: PLAN (File: `2-iteration.md`)**
+- **WHEN:** After brainstorming, before coding
+- **CONTENT:** Atomic, testable checklist steps
+- **GOAL:** Create a map so we don't get lost
+
+**Step 3: EXECUTE (Code + Tests)**
+- **WHEN:** Only after Steps 1 & 2 are complete
+- **ACTION:** TDD loop (Red → Green → Refactor)
+- **MAINTENANCE:** Check off items in `2-iteration.md` as completed
 
 ## 2. Strict Test-Driven Development (TDD) Loop
 You are prohibited from writing production code without a failing test.
@@ -20,10 +46,18 @@ You are prohibited from writing production code without a failing test.
 - **Type Hints:** Use type hints for function signatures.
 - **Docstrings:** Every public function must have a docstring explaining purpose, args, and return value.
 
-## 4. Documentation Hygiene
-- `1-core.md`: Update only upon Feature Completion.
-- `2-iteration.md`: Update CONSTANTLY as you check off steps.
-- `3-scratchpad.md`: Clear this file after a feature is complete to keep context fresh for the next problem.
+## 4. Documentation Hygiene (The 3 Files)
+
+| File | Purpose | Update When | Contains |
+|------|---------|-------------|----------|
+| `3-scratchpad.md` | Thinking space | **FIRST** - before any code | Algorithm drafts, edge cases, pseudo-code, design decisions |
+| `2-iteration.md` | Task tracker | **CONSTANTLY** - every step | Checklist, current session state, active context |
+| `1-core.md` | Project bible | **RARELY** - milestones only | Architecture, completed features, API docs |
+
+### Rules:
+- **NEVER skip the scratchpad** - even for "simple" tasks, write 2-3 lines of analysis
+- **Clear `3-scratchpad.md`** immediately after feature completion
+- **`1-core.md` is sacred** - only update when a phase/feature is fully complete and tested
 
 ## 4b. Git Commit Discipline 🔴 CRITICAL
 **Commit frequently to create rollback points and track progress.**

@@ -1,12 +1,29 @@
 # 🧪 Scratchpad
 
-> **Purpose:** Use this space for brainstorming, complex reasoning, algorithm drafts, and temporary notes.  
-> **Rule:** Clear this file after completing each feature to keep context fresh for the next problem.
+> **Purpose:** Raw thinking space. Write here BEFORE coding.  
+> **Rule:** Clear after each feature is complete.
+
+---
+
+## What Belongs Here
+
+✅ **DO write:**
+- Algorithm drafts / pseudo-code
+- Edge cases to handle
+- Data structure designs
+- "What could go wrong?" analysis
+- Decision reasoning (why X over Y?)
+- Quick calculations or estimates
+
+❌ **DON'T write:**
+- Final plans (that's `2-iteration.md`)
+- Project status (that's `1-core.md`)
+- Polished documentation
 
 ---
 
 ## Current Thinking Space
 
-*Empty - ready for next session*
+*Empty - ready for next task*
 
 ---
