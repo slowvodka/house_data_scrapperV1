@@ -2,31 +2,40 @@
 
 ## Current Session Goal
 
-**Phase 2: API Client Module** 🔄 IN PROGRESS
+**Phase 6: Scraper Module** ⬜ NEXT
 
-Building an HTTP-based API client after discovering Yad2's internal API:
-- Endpoint: `https://gw.yad2.co.il/recommendations/items/realestate`
-- Returns structured JSON with all listing data
-- No need for browser automation!
+Building the main orchestration layer that:
+- Uses `Yad2ApiClient` to fetch data for each city
+- Handles pagination (fetching all pages)
+- Uses `ListingParser` to convert JSON to Listings
+- Uses `ParquetExporter` to save results
 
 ---
 
-## API Discovery Notes
+## Phase 6 Tasks: Scraper Module
+
+| # | Task | Status | Notes |
+|---|------|--------|-------|
+| 1 | Write test: Scraper initialization | ⬜ Pending | |
+| 2 | Implement Scraper class skeleton | ⬜ Pending | |
+| 3 | Write test: Scrape single city | ⬜ Pending | Mock API |
+| 4 | Implement single city scraping | ⬜ Pending | |
+| 5 | Write test: Handle pagination | ⬜ Pending | |
+| 6 | Implement pagination logic | ⬜ Pending | |
+| 7 | Write test: Scrape multiple cities | ⬜ Pending | |
+| 8 | Implement multi-city orchestration | ⬜ Pending | |
+| 9 | Write test: Export results | ⬜ Pending | |
+| 10 | Implement full scrape-and-export flow | ⬜ Pending | |
+| 11 | **COMMIT** | ⬜ Pending | `feat(scraper): add Yad2Scraper with pagination` |
+
+---
+
+## API Reference (Quick Look)
 
 ### Endpoint
 ```
 https://gw.yad2.co.il/recommendations/items/realestate
 ```
-
-### Query Parameters
-| Parameter | Description | Example |
-|-----------|-------------|---------|
-| `type` | Listing type | `home` |
-| `count` | Results per page | `20` |
-| `categoryId` | Category (2 = real estate) | `2` |
-| `subCategoriesIds` | Property type (1 = apartments) | `1` |
-| `cityValues` | City ID | `9000` (Beer Sheva) |
-| `roomValues` | Room filter (optional) | `4` |
 
 ### Response Structure
 ```json
@@ -48,8 +57,7 @@ https://gw.yad2.co.il/recommendations/items/realestate
       "inProperty": {
         "includeElevator": true,
         "includeSecurityRoom": false,
-        "includeWarehouse": true,
-        "includeParking": true
+        "includeWarehouse": true
       },
       "address": {
         "city": {"text": "באר שבע"},
@@ -65,47 +73,17 @@ https://gw.yad2.co.il/recommendations/items/realestate
 
 ---
 
-## Phase 2 Tasks: API Client
-
-| # | Task | Status | Notes |
-|---|------|--------|-------|
-| 1 | Update config for API settings | ⬜ Pending | Add API base URL, city mappings |
-| 2 | Write test: API client initialization | ⬜ Pending | |
-| 3 | Implement API client basic structure | ⬜ Pending | |
-| 4 | Write test: Build API URL with params | ⬜ Pending | |
-| 5 | Implement URL builder | ⬜ Pending | |
-| 6 | Write test: Make API request | ⬜ Pending | Mock responses |
-| 7 | Implement request with retry logic | ⬜ Pending | |
-| 8 | Write test: Handle errors | ⬜ Pending | |
-| 9 | Implement error handling | ⬜ Pending | |
-
----
-
 ## Completed Phases
 
-### Phase 1: Configuration Module ✅
-- ScraperConfig dataclass (17 tests)
+| Phase | Module | Tests | Date |
+|-------|--------|-------|------|
+| 1 | Configuration (config.py) | 17 | 2025-12-12 |
+| 2 | Data Models (models.py) | - | 2025-12-12 |
+| 3 | Exporter (exporter.py) | 11 | 2025-12-12 |
+| 4 | API Client (api_client.py) | 15 | 2025-12-13 |
+| 5 | Parser (parser.py) | 28 | 2025-12-13 |
 
-### Phase 5: Exporter Module ✅
-- Listing dataclass with 20 fields
-- ParquetExporter with explicit PyArrow schema (11 tests)
-
----
-
-## Active Context
-
-### Architecture Change
-**Before:** Browser automation (Playwright) → HTML parsing
-**After:** HTTP requests → JSON parsing
-
-This simplifies the project significantly:
-- Faster (no browser overhead)
-- More reliable (structured JSON)
-- Simpler code (no DOM parsing)
-
-### Files To Create
-- `src/api_client.py` - HTTP client for Yad2 API
-- `tests/test_api_client.py` - API client tests
+**Total: 71 passing tests**
 
 ---
 
@@ -114,7 +92,24 @@ This simplifies the project significantly:
 | Session | Date | Goal | Outcome |
 |---------|------|------|---------|
 | 1 | 2025-12-12 | Project initialization | ✅ Complete |
-| 2 | 2025-12-12 | Phase 1: Config Module | ✅ Complete (17 tests) |
-| 3 | 2025-12-12 | Phase 2: Exporter Module | ✅ Complete (11 tests) |
+| 2 | 2025-12-12 | Config Module | ✅ Complete (17 tests) |
+| 3 | 2025-12-12 | Exporter Module | ✅ Complete (11 tests) |
 | 4 | 2025-12-13 | API Discovery | ✅ Found internal API! |
-| 5 | 2025-12-13 | Phase 2: API Client | 🔄 In Progress |
+| 5 | 2025-12-13 | API Client Module | ✅ Complete (15 tests) |
+| 6 | 2025-12-13 | Parser Module | ✅ Complete (28 tests) |
+| 7 | 2025-12-13 | Git Hygiene | ✅ Added commit rules, created 6 commits |
+| 8 | 2025-12-13 | Scraper Module | ⬜ Next |
+
+---
+
+## Files Reference
+
+| File | Purpose | Status |
+|------|---------|--------|
+| `src/config.py` | ScraperConfig with city mappings | ✅ Done |
+| `src/models.py` | Listing dataclass (20 fields) | ✅ Done |
+| `src/exporter.py` | ParquetExporter with PyArrow schema | ✅ Done |
+| `src/api_client.py` | Yad2ApiClient for HTTP requests | ✅ Done |
+| `src/parser.py` | ListingParser for JSON extraction | ✅ Done |
+| `src/scraper.py` | Main orchestration | ⬜ Next |
+| `src/browser.py` | Playwright fallback | ⬜ Optional |
