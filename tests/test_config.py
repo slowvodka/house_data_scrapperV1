@@ -5,16 +5,16 @@ TDD Phase: RED - Writing tests before implementation.
 """
 
 import pytest
-from src.config import ScraperConfig
+from src.config import ScraperConfig, CITY_ID_MAP
 
 
 class TestScraperConfigDefaults:
     """Test that ScraperConfig has sensible default values."""
 
-    def test_config_has_default_base_url(self):
-        """Config should have yad2 base URL by default."""
+    def test_config_has_default_api_base_url(self):
+        """Config should have yad2 API base URL by default."""
         config = ScraperConfig()
-        assert config.base_url == "https://www.yad2.co.il/realestate/forsale"
+        assert config.api_base_url == "https://gw.yad2.co.il/recommendations/items/realestate"
 
     def test_config_has_default_output_path(self):
         """Config should have default output directory."""
@@ -115,4 +115,70 @@ class TestScraperConfigValidation:
         """Config should raise error if max_retries is negative."""
         with pytest.raises(ValueError, match="max_retries must be non-negative"):
             ScraperConfig(max_retries=-1)
+
+    def test_config_validates_request_timeout_positive(self):
+        """Config should raise error if request_timeout is not positive."""
+        with pytest.raises(ValueError, match="request_timeout must be positive"):
+            ScraperConfig(request_timeout=0)
+
+    def test_config_validates_results_per_page_positive(self):
+        """Config should raise error if results_per_page is not positive."""
+        with pytest.raises(ValueError, match="results_per_page must be positive"):
+            ScraperConfig(results_per_page=0)
+
+
+class TestScraperConfigCityMapping:
+    """Test city name to ID mapping functionality."""
+
+    def test_city_id_map_contains_beer_sheva(self):
+        """City ID map should contain Beer Sheva."""
+        assert "באר שבע" in CITY_ID_MAP
+        assert CITY_ID_MAP["באר שבע"] == 9000
+
+    def test_city_id_map_contains_tel_aviv(self):
+        """City ID map should contain Tel Aviv."""
+        assert "תל אביב" in CITY_ID_MAP
+        assert CITY_ID_MAP["תל אביב"] == 5000
+
+    def test_city_id_map_contains_major_cities(self):
+        """City ID map should contain major Israeli cities."""
+        major_cities = ["ירושלים", "חיפה", "ראשון לציון", "אשדוד"]
+        for city in major_cities:
+            assert city in CITY_ID_MAP
+
+    def test_get_city_id_returns_correct_id(self):
+        """get_city_id should return the correct city ID."""
+        config = ScraperConfig()
+        assert config.get_city_id("באר שבע") == 9000
+        assert config.get_city_id("תל אביב") == 5000
+
+    def test_get_city_id_raises_for_unknown_city(self):
+        """get_city_id should raise ValueError for unknown cities."""
+        config = ScraperConfig()
+        with pytest.raises(ValueError, match="Unknown city"):
+            config.get_city_id("עיר לא קיימת")
+
+
+class TestScraperConfigAPISettings:
+    """Test API-specific configuration settings."""
+
+    def test_config_has_default_request_timeout(self):
+        """Config should have default request timeout of 30 seconds."""
+        config = ScraperConfig()
+        assert config.request_timeout == 30
+
+    def test_config_has_default_results_per_page(self):
+        """Config should have default results per page of 40."""
+        config = ScraperConfig()
+        assert config.results_per_page == 40
+
+    def test_config_accepts_custom_results_per_page(self):
+        """Config should accept custom results per page."""
+        config = ScraperConfig(results_per_page=20)
+        assert config.results_per_page == 20
+
+    def test_config_accepts_custom_request_timeout(self):
+        """Config should accept custom request timeout."""
+        config = ScraperConfig(request_timeout=60)
+        assert config.request_timeout == 60
 
