@@ -16,6 +16,12 @@ from urllib3.util.retry import Retry
 from src.config import ScraperConfig
 
 
+# Map API endpoint for full listing coverage
+MAP_API_URL = "https://gw.yad2.co.il/realestate-feed/forsale/map"
+
+# Bounding box for all of Israel (lat_south,lon_west,lat_north,lon_east)
+ISRAEL_BBOX = "29.5,34.2,33.3,35.9"
+
 # Browser-like headers to avoid detection
 DEFAULT_HEADERS = {
     "User-Agent": (
@@ -173,6 +179,51 @@ class Yad2ApiClient:
         """
         city_id = self.config.get_city_id(city_name)
         return self.fetch_listings(city_id)
+
+    def build_map_url(self, bbox: str, zoom: int = 8) -> str:
+        """
+        Build the map API URL with bounding box parameters.
+
+        Args:
+            bbox: Bounding box as "lat_south,lon_west,lat_north,lon_east".
+            zoom: Zoom level (lower = more results). Default 8.
+
+        Returns:
+            Complete URL string for the map API.
+        """
+        # Note: safe=',' keeps commas unencoded as the API expects
+        return f"{MAP_API_URL}?bBox={bbox}&zoom={zoom}"
+
+    def fetch_map_listings(self, bbox: str, zoom: int = 8) -> Dict[str, Any]:
+        """
+        Fetch all listings from the map API.
+
+        This endpoint returns ALL listings within the bounding box,
+        not limited like the recommendations API.
+
+        Args:
+            bbox: Bounding box as "lat_south,lon_west,lat_north,lon_east".
+                  Use ISRAEL_BBOX constant for full country coverage.
+            zoom: Zoom level (lower = more results). Default 8.
+
+        Returns:
+            Parsed JSON with data.markers array.
+
+        Raises:
+            requests.exceptions.RequestException: On HTTP errors.
+        """
+        url = self.build_map_url(bbox, zoom)
+
+        try:
+            response = self.session.get(
+                url,
+                timeout=self.config.request_timeout,
+            )
+            response.raise_for_status()
+            return response.json()
+
+        except requests.exceptions.RequestException:
+            raise
 
     def close(self) -> None:
         """

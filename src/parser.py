@@ -118,6 +118,33 @@ class ListingParser:
 
         return listings
 
+    def parse_map_response(self, api_response: Dict[str, Any]) -> List[Listing]:
+        """
+        Parse map API response containing markers.
+
+        Args:
+            api_response: Map API response with {"data": {"markers": [...]}}.
+
+        Returns:
+            List of Listing objects extracted from markers.
+        """
+        listings = []
+
+        data = api_response.get("data", {})
+        markers = data.get("markers", [])
+
+        for marker in markers:
+            if isinstance(marker, dict):
+                # Extract city from marker's address
+                address_data = marker.get("address", {})
+                city_obj = address_data.get("city", {})
+                city = city_obj.get("text", "Unknown") if city_obj else "Unknown"
+
+                listing = self.parse_listing(marker, city)
+                listings.append(listing)
+
+        return listings
+
     def _build_address(self, address_data: Dict[str, Any]) -> Optional[str]:
         """
         Build address string from address components.

@@ -1,39 +1,33 @@
 # 🔄 Current Iteration
 
-## Goal
+## ✅ Session Complete
 
-**Investigate zoom parameter** to discover how to get more listings.
+**Achieved:** Map API with grid-based scraping
 
----
-
-## Next Session Tasks
-
-### 1. Browser DevTools Investigation
-```
-1. Open: https://www.yad2.co.il/realestate/forsale?zoom=1
-2. DevTools → Network tab → filter XHR/Fetch
-3. Interact with map (zoom in/out, pan)
-4. Capture any API calls that return listing data
-5. Note: endpoint, parameters, response structure
-```
-
-### 2. If Endpoint Found
-- [ ] Test with requests library
-- [ ] Add to `api_client.py`
-- [ ] Write tests (TDD)
-- [ ] Run scrape, compare to current 574
-
-### 3. If No Endpoint
-- [ ] Check WebSocket tab
-- [ ] Use Playwright to intercept traffic
-- [ ] Examine Mapbox vector tiles
+### Results
+- **4,225 listings** from Tel Aviv (20×20 grid, zoom=16)
+- **100 tests** passing
+- New: `fetch_map_listings()`, `parse_map_response()`, `get_city_bbox()`
 
 ---
 
-## Done This Session
+## Next Session: Get to 10K
 
-- [x] Fixed 7 broken tests (94 now passing)
-- [x] Tested `type` param → only `home` valid
-- [x] Tested `categoryId` param → only `2` valid
-- [x] Tested 15+ endpoint variations → all 404
-- [x] Restructured documentation files
+### Key Insight
+Website shows ~10K for "Tel Aviv" but that's actually **Gush Dan** (metropolitan area).
+
+### Plan
+1. **Expand bbox** to cover Gush Dan:
+   - Current: `(32.0303, 34.7422, 32.1463, 34.8513)` → ~4K listings
+   - Proposed: `(31.95, 34.70, 32.25, 34.92)` → should include Ramat Gan, Givatayim, Holon, Bat Yam
+
+2. **Test with larger area:**
+   ```python
+   GUSH_DAN_BBOX = (31.95, 34.70, 32.25, 34.92)
+   GRID_SIZE = 25
+   ZOOM = 16
+   ```
+
+3. **Multi-city scraper** after confirming coverage
+
+---
