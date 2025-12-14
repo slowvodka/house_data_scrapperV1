@@ -59,6 +59,11 @@ You are prohibited from writing production code without a failing test.
 - **Clear `3-scratchpad.md`** immediately after feature completion
 - **`1-core.md` is sacred** - only update when a phase/feature is fully complete and tested
 
+### 🔴 CRITICAL: Phase Approval
+- **Only the USER can approve** marking a phase as "Done" (✅)
+- Agent must **ask for user confirmation** before changing status from "In Progress" to "Done"
+- Never auto-complete phases without explicit user approval
+
 ## 4b. Git Commit Discipline 🔴 CRITICAL
 **Commit frequently to create rollback points and track progress.**
 

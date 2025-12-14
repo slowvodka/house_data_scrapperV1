@@ -30,18 +30,19 @@
 
 ---
 
-## Completed Phases
+## Phase Status
 
-| Phase | Module | File | Tests | Description |
-|-------|--------|------|-------|-------------|
-| 1 | Config | `config.py` | 17 | ScraperConfig dataclass, CITY_ID_MAP (20 cities), validation |
-| 2 | Models | `models.py` | - | Listing dataclass with 20 fields |
-| 3 | Exporter | `exporter.py` | 11 | ParquetExporter with PyArrow schema |
-| 4 | API Client | `api_client.py` | 15 | Yad2ApiClient with retry, cookies, headers |
-| 5 | Parser | `parser.py` | 28 | ListingParser: JSON → Listing objects |
-| 6 | Scraper | `scraper.py` | 12 | Yad2Scraper: orchestrates all components |
+| Phase | Module | File | Tests | Status |
+|-------|--------|------|-------|--------|
+| 1 | Config | `config.py` | 28 | ✅ Done |
+| 2 | Models | `models.py` | - | ✅ Done |
+| 3 | Exporter | `exporter.py` | 11 | ✅ Done |
+| 4 | API Client | `api_client.py` | 21 | ✅ Done |
+| 5 | Parser | `parser.py` | 28 | ✅ Done |
+| 6 | Scraper | `scraper.py` | 12 | 🔄 In Progress |
+| 7 | CLI | `main.py` | - | ⏳ Pending |
 
-**Total: 94 tests passing**
+**Total: 100 tests passing**
 
 ---
 
@@ -49,8 +50,8 @@
 
 ### config.py
 - `ScraperConfig` dataclass with API URL, delays, timeouts
-- `CITY_ID_MAP`: 20 Hebrew city names → Yad2 IDs
-- `get_city_id()`, `get_random_delay()` methods
+- `CITY_DATA`: 20 cities with IDs + bounding boxes
+- `get_city_id()`, `get_city_bbox()`, `get_random_delay()` methods
 
 ### models.py
 - `Listing` dataclass with 20 fields:
@@ -63,12 +64,14 @@
 ### api_client.py
 - `Yad2ApiClient` with requests.Session
 - `init_session()`: visits main site for cookies (required!)
-- `fetch_listings(city_id, property_type)`: calls API
+- `fetch_listings(city_id, property_type)`: recommendations API
+- `fetch_map_listings(bbox, zoom)`: map API (grid-based scraping)
 - `PROPERTY_TYPES = [1, 2, 4, 5, 6, 7]` (6 types)
 
 ### parser.py
 - `ListingParser.parse_listing()`: single JSON → Listing
-- `ListingParser.parse_response()`: full API response → List[Listing]
+- `ListingParser.parse_response()`: recommendations API → List[Listing]
+- `ListingParser.parse_map_response()`: map API → List[Listing]
 - Handles nested JSON, missing fields, Hebrew text
 
 ### exporter.py
@@ -121,14 +124,24 @@ Must call `init_session()` first to get cookies from main site, otherwise API re
 
 | Metric | Value |
 |--------|-------|
-| Cities scraped | 3 (Tel Aviv, Ramat Gan, Givatayim) |
-| Listings collected | 574 |
-| Tests passing | 94 |
+| Best result so far | 4,225 listings (Tel Aviv, 20×20 grid) |
+| Tests passing | 100 |
 
 ---
 
-## Open Problem: Zoom Mystery
+## Map API (Discovered)
 
-**Observation:** Website `?zoom=1` shows thousands of map points.  
-**Problem:** Our API returns only ~60 per property type.  
-**Status:** Under investigation - need to capture browser's actual API calls.
+**Endpoint:** `https://gw.yad2.co.il/realestate-feed/forsale/map`
+
+**Parameters:**
+| Param | Example | Notes |
+|-------|---------|-------|
+| `bBox` | `32.03,34.74,32.15,34.85` | lat_min,lon_min,lat_max,lon_max |
+| `zoom` | `16` | Higher = smaller area |
+
+**Strategy:** Grid-based scraping
+- API caps at 200 per request
+- Use fine grid (20×20) to avoid cap
+- Deduplicate by URL/token
+
+**Current Challenge:** Website shows ~10K for "Tel Aviv" but that includes Gush Dan (metro area). Need to expand bbox to cover full metropolitan area.
