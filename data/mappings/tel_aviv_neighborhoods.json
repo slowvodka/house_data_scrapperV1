@@ -1,0 +1,587 @@
+{
+  "195": {
+    "name": "הגוש הגדול, רמת אביב החדשה, נופי ים",
+    "city": "תל אביב יפו",
+    "total_listings": 114,
+    "primary_city_listings": 114,
+    "city_distribution": {
+      "תל אביב יפו": 114
+    }
+  },
+  "196": {
+    "name": "נווה אביבים",
+    "city": "תל אביב יפו",
+    "total_listings": 113,
+    "primary_city_listings": 113,
+    "city_distribution": {
+      "תל אביב יפו": 113
+    }
+  },
+  "197": {
+    "name": "Unknown",
+    "city": "תל אביב יפו",
+    "total_listings": 92,
+    "primary_city_listings": 92,
+    "city_distribution": {
+      "תל אביב יפו": 92
+    }
+  },
+  "198": {
+    "name": "כוכב הצפון",
+    "city": "תל אביב יפו",
+    "total_listings": 107,
+    "primary_city_listings": 107,
+    "city_distribution": {
+      "תל אביב יפו": 107
+    }
+  },
+  "199": {
+    "name": "נאות אפקה ב'",
+    "city": "תל אביב יפו",
+    "total_listings": 105,
+    "primary_city_listings": 105,
+    "city_distribution": {
+      "תל אביב יפו": 105
+    }
+  },
+  "200": {
+    "name": "נאות אפקה א'",
+    "city": "תל אביב יפו",
+    "total_listings": 36,
+    "primary_city_listings": 36,
+    "city_distribution": {
+      "תל אביב יפו": 36
+    }
+  },
+  "201": {
+    "name": "שיכון דן, נווה דן",
+    "city": "תל אביב יפו",
+    "total_listings": 72,
+    "primary_city_listings": 72,
+    "city_distribution": {
+      "תל אביב יפו": 72
+    }
+  },
+  "202": {
+    "name": "רביבים",
+    "city": "תל אביב יפו",
+    "total_listings": 52,
+    "primary_city_listings": 52,
+    "city_distribution": {
+      "תל אביב יפו": 52
+    }
+  },
+  "203": {
+    "name": "רמת החייל",
+    "city": "תל אביב יפו",
+    "total_listings": 107,
+    "primary_city_listings": 107,
+    "city_distribution": {
+      "תל אביב יפו": 107
+    }
+  },
+  "204": {
+    "name": "הצפון החדש - צפון",
+    "city": "תל אביב יפו",
+    "total_listings": 105,
+    "primary_city_listings": 105,
+    "city_distribution": {
+      "תל אביב יפו": 105
+    }
+  },
+  "205": {
+    "name": "פלורנטין",
+    "city": "תל אביב יפו",
+    "total_listings": 113,
+    "primary_city_listings": 113,
+    "city_distribution": {
+      "תל אביב יפו": 113
+    }
+  },
+  "206": {
+    "name": "יד אליהו",
+    "city": "תל אביב יפו",
+    "total_listings": 117,
+    "primary_city_listings": 117,
+    "city_distribution": {
+      "תל אביב יפו": 117
+    }
+  },
+  "207": {
+    "name": "נווה חן",
+    "city": "תל אביב יפו",
+    "total_listings": 114,
+    "primary_city_listings": 114,
+    "city_distribution": {
+      "תל אביב יפו": 114
+    }
+  },
+  "208": {
+    "name": "נווה ברבור, כפר שלם מערב",
+    "city": "תל אביב יפו",
+    "total_listings": 27,
+    "primary_city_listings": 27,
+    "city_distribution": {
+      "תל אביב יפו": 27
+    }
+  },
+  "209": {
+    "name": "נווה אליעזר וכפר שלם מזרח",
+    "city": "תל אביב יפו",
+    "total_listings": 62,
+    "primary_city_listings": 62,
+    "city_distribution": {
+      "תל אביב יפו": 62
+    }
+  },
+  "210": {
+    "name": "כפיר, נווה כפיר",
+    "city": "תל אביב יפו",
+    "total_listings": 44,
+    "primary_city_listings": 44,
+    "city_distribution": {
+      "תל אביב יפו": 44
+    }
+  },
+  "211": {
+    "name": "גני צהלה, רמות צהלה",
+    "city": "תל אביב יפו",
+    "total_listings": 103,
+    "primary_city_listings": 103,
+    "city_distribution": {
+      "תל אביב יפו": 103
+    }
+  },
+  "212": {
+    "name": "קרית שלום",
+    "city": "תל אביב יפו",
+    "total_listings": 124,
+    "primary_city_listings": 124,
+    "city_distribution": {
+      "תל אביב יפו": 124
+    }
+  },
+  "213": {
+    "name": "נווה עופר, תל כביר",
+    "city": "תל אביב יפו",
+    "total_listings": 92,
+    "primary_city_listings": 92,
+    "city_distribution": {
+      "תל אביב יפו": 92
+    }
+  },
+  "214": {
+    "name": "מעוז אביב",
+    "city": "תל אביב יפו",
+    "total_listings": 5,
+    "primary_city_listings": 5,
+    "city_distribution": {
+      "תל אביב יפו": 5
+    }
+  },
+  "215": {
+    "name": "שפירא",
+    "city": "תל אביב יפו",
+    "total_listings": 90,
+    "primary_city_listings": 90,
+    "city_distribution": {
+      "תל אביב יפו": 90
+    }
+  },
+  "307": {
+    "name": "נווה שאנן",
+    "city": "תל אביב יפו",
+    "total_listings": 128,
+    "primary_city_listings": 128,
+    "city_distribution": {
+      "תל אביב יפו": 128
+    }
+  },
+  "308": {
+    "name": "התקוה, בית יעקב, נווה צה\"ל",
+    "city": "תל אביב יפו",
+    "total_listings": 124,
+    "primary_city_listings": 124,
+    "city_distribution": {
+      "תל אביב יפו": 124
+    }
+  },
+  "312": {
+    "name": "תל ברוך",
+    "city": "תל אביב יפו",
+    "total_listings": 100,
+    "primary_city_listings": 100,
+    "city_distribution": {
+      "תל אביב יפו": 100
+    }
+  },
+  "313": {
+    "name": "צהלה",
+    "city": "תל אביב יפו",
+    "total_listings": 42,
+    "primary_city_listings": 42,
+    "city_distribution": {
+      "תל אביב יפו": 42
+    }
+  },
+  "314": {
+    "name": "נווה שרת",
+    "city": "תל אביב יפו",
+    "total_listings": 111,
+    "primary_city_listings": 111,
+    "city_distribution": {
+      "תל אביב יפו": 111
+    }
+  },
+  "315": {
+    "name": "המשתלה",
+    "city": "תל אביב יפו",
+    "total_listings": 104,
+    "primary_city_listings": 104,
+    "city_distribution": {
+      "תל אביב יפו": 104
+    }
+  },
+  "316": {
+    "name": "קרית שאול",
+    "city": "תל אביב יפו",
+    "total_listings": 10,
+    "primary_city_listings": 10,
+    "city_distribution": {
+      "תל אביב יפו": 10
+    }
+  },
+  "317": {
+    "name": "נחלת יצחק",
+    "city": "תל אביב יפו",
+    "total_listings": 101,
+    "primary_city_listings": 101,
+    "city_distribution": {
+      "תל אביב יפו": 101
+    }
+  },
+  "318": {
+    "name": "תל חיים",
+    "city": "תל אביב יפו",
+    "total_listings": 27,
+    "primary_city_listings": 27,
+    "city_distribution": {
+      "תל אביב יפו": 27
+    }
+  },
+  "319": {
+    "name": "לבנה",
+    "city": "תל אביב יפו",
+    "total_listings": 22,
+    "primary_city_listings": 22,
+    "city_distribution": {
+      "תל אביב יפו": 22
+    }
+  },
+  "320": {
+    "name": "יפו העתיקה",
+    "city": "תל אביב יפו",
+    "total_listings": 37,
+    "primary_city_listings": 37,
+    "city_distribution": {
+      "תל אביב יפו": 37
+    }
+  },
+  "321": {
+    "name": "יפו ד', גבעת התמרים",
+    "city": "תל אביב יפו",
+    "total_listings": 105,
+    "primary_city_listings": 105,
+    "city_distribution": {
+      "תל אביב יפו": 105
+    }
+  },
+  "481": {
+    "name": "תל ברוך צפון",
+    "city": "תל אביב יפו",
+    "total_listings": 90,
+    "primary_city_listings": 90,
+    "city_distribution": {
+      "תל אביב יפו": 90
+    }
+  },
+  "484": {
+    "name": "Unknown",
+    "city": "תל אביב יפו",
+    "total_listings": 2,
+    "primary_city_listings": 2,
+    "city_distribution": {
+      "תל אביב יפו": 2
+    }
+  },
+  "485": {
+    "name": "מונטיפיורי, הרכבת",
+    "city": "תל אביב יפו",
+    "total_listings": 111,
+    "primary_city_listings": 111,
+    "city_distribution": {
+      "תל אביב יפו": 111
+    }
+  },
+  "486": {
+    "name": "ביצרון ורמת ישראל",
+    "city": "תל אביב יפו",
+    "total_listings": 81,
+    "primary_city_listings": 81,
+    "city_distribution": {
+      "תל אביב יפו": 81
+    }
+  },
+  "487": {
+    "name": "אורות",
+    "city": "תל אביב יפו",
+    "total_listings": 2,
+    "primary_city_listings": 2,
+    "city_distribution": {
+      "תל אביב יפו": 2
+    }
+  },
+  "488": {
+    "name": "עזרא, הארגזים",
+    "city": "תל אביב יפו",
+    "total_listings": 59,
+    "primary_city_listings": 59,
+    "city_distribution": {
+      "תל אביב יפו": 59
+    }
+  },
+  "489": {
+    "name": "פארק דרום",
+    "city": "תל אביב יפו",
+    "total_listings": 5,
+    "primary_city_listings": 5,
+    "city_distribution": {
+      "תל אביב יפו": 5
+    }
+  },
+  "492": {
+    "name": "נווה גולן, יפו ג'",
+    "city": "תל אביב יפו",
+    "total_listings": 69,
+    "primary_city_listings": 69,
+    "city_distribution": {
+      "תל אביב יפו": 69
+    }
+  },
+  "493": {
+    "name": "עג'מי, גבעת העליה",
+    "city": "תל אביב יפו",
+    "total_listings": 104,
+    "primary_city_listings": 104,
+    "city_distribution": {
+      "תל אביב יפו": 104
+    }
+  },
+  "494": {
+    "name": "צהלון, שיכוני חסכון",
+    "city": "תל אביב יפו",
+    "total_listings": 106,
+    "primary_city_listings": 106,
+    "city_distribution": {
+      "תל אביב יפו": 106
+    }
+  },
+  "495": {
+    "name": "צפון יפו, המושבה האמריקאית-גרמנית",
+    "city": "תל אביב יפו",
+    "total_listings": 109,
+    "primary_city_listings": 109,
+    "city_distribution": {
+      "תל אביב יפו": 109
+    }
+  },
+  "496": {
+    "name": "מכללת תל אביב יפו, דקר",
+    "city": "תל אביב יפו",
+    "total_listings": 63,
+    "primary_city_listings": 63,
+    "city_distribution": {
+      "תל אביב יפו": 63
+    }
+  },
+  "847": {
+    "name": "גבעת הרצל, אזור המלאכה יפו",
+    "city": "תל אביב יפו",
+    "total_listings": 93,
+    "primary_city_listings": 93,
+    "city_distribution": {
+      "תל אביב יפו": 93
+    }
+  },
+  "848": {
+    "name": "נווה צדק",
+    "city": "תל אביב יפו",
+    "total_listings": 102,
+    "primary_city_listings": 102,
+    "city_distribution": {
+      "תל אביב יפו": 102
+    }
+  },
+  "849": {
+    "name": "תכנית ל', למד",
+    "city": "תל אביב יפו",
+    "total_listings": 104,
+    "primary_city_listings": 104,
+    "city_distribution": {
+      "תל אביב יפו": 104
+    }
+  },
+  "850": {
+    "name": "איזור שדה דב",
+    "city": "תל אביב יפו",
+    "total_listings": 17,
+    "primary_city_listings": 17,
+    "city_distribution": {
+      "תל אביב יפו": 17
+    }
+  },
+  "1461": {
+    "name": "הצפון הישן - דרום",
+    "city": "תל אביב יפו",
+    "total_listings": 124,
+    "primary_city_listings": 124,
+    "city_distribution": {
+      "תל אביב יפו": 124
+    }
+  },
+  "1462": {
+    "name": "גני שרונה, קרית הממשלה",
+    "city": "תל אביב יפו",
+    "total_listings": 106,
+    "primary_city_listings": 106,
+    "city_distribution": {
+      "תל אביב יפו": 106
+    }
+  },
+  "1483": {
+    "name": "הצפון הישן - צפון",
+    "city": "תל אביב יפו",
+    "total_listings": 118,
+    "primary_city_listings": 118,
+    "city_distribution": {
+      "תל אביב יפו": 118
+    }
+  },
+  "1490": {
+    "name": "אזורי חן, גימל החדשה",
+    "city": "תל אביב יפו",
+    "total_listings": 102,
+    "primary_city_listings": 102,
+    "city_distribution": {
+      "תל אביב יפו": 102
+    }
+  },
+  "1491": {
+    "name": "גלילות",
+    "city": "תל אביב יפו",
+    "total_listings": 92,
+    "primary_city_listings": 92,
+    "city_distribution": {
+      "תל אביב יפו": 92
+    }
+  },
+  "1513": {
+    "name": "הדר יוסף",
+    "city": "תל אביב יפו",
+    "total_listings": 109,
+    "primary_city_listings": 109,
+    "city_distribution": {
+      "תל אביב יפו": 109
+    }
+  },
+  "1514": {
+    "name": "אפקה",
+    "city": "תל אביב יפו",
+    "total_listings": 75,
+    "primary_city_listings": 75,
+    "city_distribution": {
+      "תל אביב יפו": 75
+    }
+  },
+  "1515": {
+    "name": "רמת אביב ג'",
+    "city": "תל אביב יפו",
+    "total_listings": 105,
+    "primary_city_listings": 105,
+    "city_distribution": {
+      "תל אביב יפו": 105
+    }
+  },
+  "1516": {
+    "name": "הצפון החדש - כיכר המדינה",
+    "city": "תל אביב יפו",
+    "total_listings": 111,
+    "primary_city_listings": 111,
+    "city_distribution": {
+      "תל אביב יפו": 111
+    }
+  },
+  "1517": {
+    "name": "צמרות איילון, פארק צמרת",
+    "city": "תל אביב יפו",
+    "total_listings": 104,
+    "primary_city_listings": 104,
+    "city_distribution": {
+      "תל אביב יפו": 104
+    }
+  },
+  "1518": {
+    "name": "בבלי",
+    "city": "תל אביב יפו",
+    "total_listings": 103,
+    "primary_city_listings": 103,
+    "city_distribution": {
+      "תל אביב יפו": 103
+    }
+  },
+  "1519": {
+    "name": "הצפון החדש - דרום",
+    "city": "תל אביב יפו",
+    "total_listings": 107,
+    "primary_city_listings": 107,
+    "city_distribution": {
+      "תל אביב יפו": 107
+    }
+  },
+  "1520": {
+    "name": "לב תל אביב, לב העיר צפון",
+    "city": "תל אביב יפו",
+    "total_listings": 118,
+    "primary_city_listings": 118,
+    "city_distribution": {
+      "תל אביב יפו": 118
+    }
+  },
+  "1521": {
+    "name": "כרם התימנים",
+    "city": "תל אביב יפו",
+    "total_listings": 106,
+    "primary_city_listings": 106,
+    "city_distribution": {
+      "תל אביב יפו": 106
+    }
+  },
+  "1649": {
+    "name": "רמת הטייסים",
+    "city": "תל אביב יפו",
+    "total_listings": 12,
+    "primary_city_listings": 12,
+    "city_distribution": {
+      "תל אביב יפו": 12
+    }
+  },
+  "1650": {
+    "name": "ניר אביב",
+    "city": "תל אביב יפו",
+    "total_listings": 45,
+    "primary_city_listings": 45,
+    "city_distribution": {
+      "תל אביב יפו": 45
+    }
+  }
+}

@@ -143,7 +143,9 @@ house_data_scrapper/
 │   ├── test_exporter.py
 │   └── test_scraper.py
 ├── data/
+│   ├── mappings/           # JSON mapping files (city_to_neighborhoods.json, etc.)
 │   └── output/             # Parquet files go here
+├── temp_scripts/           # Temporary scripts for short-term checks/analysis
 ├── 1-core.md
 ├── 2-iteration.md
 ├── 3-scratchpad.md
@@ -152,4 +154,32 @@ house_data_scrapper/
 ├── pyproject.toml
 └── README.md
 ```
+
+## 8. Temporary Scripts Management 🔴 CRITICAL
+
+**All temporary scripts MUST be created in `temp_scripts/` folder.**
+
+### Rules:
+- **When creating temporary scripts:** Place ALL temporary/analysis scripts in `temp_scripts/` folder
+- **Examples of temp scripts:**
+  - Field analysis scripts (`analyze_api_fields.py`)
+  - Data checking scripts (`check_json_redundancy.py`)
+  - One-off test scripts
+  - Exploration/experimentation scripts
+- **When user says "cleanup":** DELETE all files in `temp_scripts/` folder
+- **Purpose:** Keep project root clean, separate temporary work from production code
+
+### Workflow:
+```
+Need to check/test something quickly?
+  → Create script in temp_scripts/
+  → Use it
+  → When user says "cleanup" → DELETE temp_scripts/ contents
+```
+
+### What Goes Where:
+- **`src/`**: Production code modules
+- **`tests/`**: Test files
+- **`temp_scripts/`**: Temporary analysis/check scripts (deleted on cleanup)
+- **Root**: Only core project files (scrapers, configs, docs)
 

@@ -51,6 +51,22 @@ class ListingParser:
         # Build address string
         address = self._build_address(address_data)
 
+        # Extract coordinates
+        coords = address_data.get("coords", {})
+        latitude = coords.get("lat") if coords else None
+        longitude = coords.get("lon") if coords else None
+
+        # Extract area
+        area = self._safe_get_text(address_data, "area")
+
+        # Extract images
+        images = metadata.get("images")
+        if not isinstance(images, list):
+            images = None
+
+        # Extract square meters build
+        sqm_build = metadata.get("squareMeterBuild")
+
         # Extract price (0 means no price)
         price = data.get("price")
         if price == 0:
@@ -69,10 +85,15 @@ class ListingParser:
             rooms=additional.get("roomsCount"),
             floor=house.get("floor"),
             sqm=additional.get("squareMeter"),
+            sqm_build=sqm_build,
             address=address,
+            area=area,
             neighborhood=self._safe_get_text(address_data, "neighborhood"),
+            latitude=latitude,
+            longitude=longitude,
             asset_type=self._safe_get_text(additional, "property"),
             description=metadata.get("description"),
+            images=images,
             # Building information
             total_floors=additional.get("buildingTopFloor"),
             year_built=additional.get("yearBuilt"),  # May not always be present

@@ -6,7 +6,7 @@ Contains dataclasses representing the structured data extracted from listings.
 
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Optional
+from typing import List, Optional
 
 
 @dataclass
@@ -24,10 +24,15 @@ class Listing:
         rooms: Number of rooms (can be fractional, e.g., 3.5).
         floor: Floor number (None if not specified).
         sqm: Property size in square meters.
+        sqm_build: Built square meters (from metaData.squareMeterBuild).
         address: Street address (e.g., "רחוב דיזנגוף 50").
+        area: Area name (from address.area.text).
         neighborhood: Neighborhood name within the city.
+        latitude: Latitude coordinate (from address.coords.lat).
+        longitude: Longitude coordinate (from address.coords.lon).
         asset_type: Type of property (דירה, דירת גן, פנטהאוז, etc.).
         description: Free-text description of the listing.
+        images: List of image URLs (from metaData.images).
 
         # Building information
         total_floors: Total number of floors in the building.
@@ -55,10 +60,15 @@ class Listing:
     rooms: Optional[float] = None
     floor: Optional[int] = None
     sqm: Optional[int] = None
+    sqm_build: Optional[int] = None
     address: Optional[str] = None
+    area: Optional[str] = None
     neighborhood: Optional[str] = None
+    latitude: Optional[float] = None
+    longitude: Optional[float] = None
     asset_type: Optional[str] = None
     description: Optional[str] = None
+    images: Optional[List[str]] = None
 
     # Building information (optional)
     total_floors: Optional[int] = None

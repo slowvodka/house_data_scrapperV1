@@ -39,7 +39,7 @@
 | 3 | Exporter | `exporter.py` | 11 | ✅ Done |
 | 4 | API Client | `api_client.py` | 21 | ✅ Done |
 | 5 | Parser | `parser.py` | 28 | ✅ Done |
-| 6 | Scraper | `scraper.py` | 12 | 🔄 In Progress |
+| 6 | Scraper | `scraper.py` | 12 | ✅ Done |
 | 7 | CLI | `main.py` | - | ⏳ Pending |
 
 **Total: 100 tests passing**
@@ -54,9 +54,9 @@
 - `get_city_id()`, `get_city_bbox()`, `get_random_delay()` methods
 
 ### models.py
-- `Listing` dataclass with 20 fields:
+- `Listing` dataclass with 25 fields:
   - Required: city, url, scraped_at
-  - Property: price, rooms, floor, sqm, address, neighborhood, asset_type, description
+  - Property: price, rooms, floor, sqm, sqm_build, address, area, neighborhood, latitude, longitude, asset_type, description, images
   - Building: total_floors, year_built, elevator
   - Features: parking, balconies, mamad, storage_unit, condition
   - Availability: entrance_date
@@ -124,7 +124,10 @@ Must call `init_session()` first to get cookies from main site, otherwise API re
 
 | Metric | Value |
 |--------|-------|
-| Best result so far | 4,225 listings (Tel Aviv, 20×20 grid) |
+| Best result (neighborhood-based) | 5,359 Tel Aviv listings |
+| Best result (grid-based) | 11,580 listings (Gush Dan, 25×25 grid) |
+| Tel Aviv neighborhoods discovered | 65 |
+| Cities mapped with neighborhoods | 98 |
 | Tests passing | 100 |
 
 ---
@@ -141,7 +144,83 @@ Must call `init_session()` first to get cookies from main site, otherwise API re
 
 **Strategy:** Grid-based scraping
 - API caps at 200 per request
-- Use fine grid (20×20) to avoid cap
+- Use fine grid (25×25) to avoid cap
 - Deduplicate by URL/token
 
-**Current Challenge:** Website shows ~10K for "Tel Aviv" but that includes Gush Dan (metro area). Need to expand bbox to cover full metropolitan area.
+**Gush Dan Coverage:** ✅ Solved
+- Expanded Tel Aviv bbox to `(31.95, 34.70, 32.25, 34.92)` to cover full metropolitan area
+- Includes: Tel Aviv, Ramat Gan, Givatayim, Holon, Bat Yam, Bnei Brak
+- Result: 11,580 listings (exceeded 10K target)
+
+---
+
+## Neighborhood-Based Scraping (Final Approach)
+
+**Endpoint:** `https://gw.yad2.co.il/realestate-feed/forsale/map`
+
+**Parameters:**
+| Param | Example | Notes |
+|-------|---------|-------|
+| `city` | `5000` | City ID (Tel Aviv = 5000) |
+| `neighborhood` | `307` | Neighborhood ID |
+
+**Strategy:** Neighborhood-based scraping
+- Query each neighborhood individually using its ID
+- API caps at 200 listings per request (no neighborhoods exceed this)
+- 100% city-specific results (no filtering needed)
+- More efficient than grid approach (65 requests vs 625)
+
+**Results:**
+- **5,359 Tel Aviv listings** collected
+- **65 neighborhoods** discovered and mapped
+- **98 cities** mapped with neighborhoods in `city_to_neighborhoods.json`
+
+**Files:**
+- `scrape_city_by_neighborhoods.py` - Final neighborhood scraper script
+- `data/mappings/city_to_neighborhoods.json` - Complete city-to-neighborhood mapping
+- `data/mappings/neighborhood_details.json` - Detailed neighborhood metadata
+
+---
+
+## Field Analysis
+
+**API Response Structure:**
+- Total fields available: ~33 fields
+- Fields we extract: 25 fields
+
+**Currently Extracted Fields:**
+
+| Category | Field | Source Path |
+|----------|-------|-------------|
+| **Core** | city | `address.city.text` |
+| | url | Constructed from `token` |
+| | scraped_at | Added by parser |
+| | price | `price` |
+| | rooms | `additionalDetails.roomsCount` |
+| | floor | `address.house.floor` |
+| | sqm | `additionalDetails.squareMeter` |
+| | sqm_build | `metaData.squareMeterBuild` |
+| | address | `address.street.text` + `address.house.number` |
+| | area | `address.area.text` |
+| | neighborhood | `address.neighborhood.text` |
+| | latitude | `address.coords.lat` |
+| | longitude | `address.coords.lon` |
+| | asset_type | `additionalDetails.property.text` |
+| | description | `metaData.description` |
+| | images | `metaData.images` (list of URLs) |
+| **Building** | total_floors | `additionalDetails.buildingTopFloor` |
+| | year_built | `additionalDetails.yearBuilt` |
+| | elevator | `inProperty.includeElevator` |
+| **Features** | parking | `additionalDetails.parkingSpacesCount` |
+| | balconies | `additionalDetails.balconiesCount` |
+| | mamad | `inProperty.includeSecurityRoom` |
+| | storage_unit | `inProperty.includeWarehouse` |
+| | condition | `additionalDetails.propertyCondition.text` |
+| **Availability** | entrance_date | `additionalDetails.entranceDate` |
+
+**Available but Not Extracted:**
+- `adType` - Type of ad (private/broker)
+- `priority` - Listing priority
+- `metaData.coverImage` - Cover image URL (we extract full `images` array instead)
+- `orderId` - Order ID
+- `categoryId`, `subcategoryId` - Category IDs

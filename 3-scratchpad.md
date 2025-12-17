@@ -4,8 +4,8 @@
 
 ---
 
-## ✅ CLEAR - Map API Implementation Complete
+## ✅ CLEAR - Ready for Next Session
 
-Previous work moved to `1-core.md`.
+Scraper phase complete. Next: CLI/API development.
 
 ---

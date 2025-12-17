@@ -1,33 +1,99 @@
 # 🔄 Current Iteration
 
-## ✅ Session Complete
+## ✅ Session Complete: Scraper Phase Finalized
 
-**Achieved:** Map API with grid-based scraping
+**Achievement:** Scraper engine complete, data organized, ready for CLI/API development
 
-### Results
-- **4,225 listings** from Tel Aviv (20×20 grid, zoom=16)
-- **100 tests** passing
-- New: `fetch_map_listings()`, `parse_map_response()`, `get_city_bbox()`
+### Completed This Session
+- [x] Added 5 new fields (latitude, longitude, area, images, sqm_build) ✅
+- [x] Reorganized JSON files to `data/mappings/` ✅
+- [x] Updated scraper to use new file paths ✅
+- [x] Updated documentation ✅
+- [x] All 100 tests passing ✅
+
+### Current State
+- **Scraper Phase:** ✅ Complete
+- **25 fields extracted** from API (was 20)
+- **5,359 Tel Aviv listings** collected via neighborhood-based approach
+- **98 cities** mapped with neighborhoods
+- **Data files organized** in `data/mappings/`
+
+### Project Structure
+```
+house_data_scrapper/
+├── src/                    # Core modules (all complete)
+├── data/
+│   ├── mappings/           # JSON mapping files
+│   │   ├── city_to_neighborhoods.json
+│   │   └── neighborhood_details.json
+│   └── output/            # Parquet files
+├── temp_scripts/          # Temporary scripts (cleanup on request)
+├── scrape_city_by_neighborhoods.py  # Neighborhood scraper
+└── scrape_tel_aviv.py     # Grid-based scraper (reference)
+```
 
 ---
 
-## Next Session: Get to 10K
+## 🎯 Next Session: CLI/API Development
 
-### Key Insight
-Website shows ~10K for "Tel Aviv" but that's actually **Gush Dan** (metropolitan area).
+**Goal:** Build CLI/API interface to scrape cities using neighborhood IDs
+
+### Requirements
+1. **CLI Interface:**
+   - Accept city name as input
+   - Load neighborhood IDs from `data/mappings/city_to_neighborhoods.json`
+   - Scrape all neighborhoods for that city
+   - Export to Parquet file
+
+2. **API Endpoints (if needed):**
+   - GET `/cities` - List available cities
+   - GET `/cities/{city_name}/neighborhoods` - List neighborhoods for city
+   - POST `/scrape/{city_name}` - Trigger scraping for a city
+   - GET `/scrape/{city_name}/status` - Check scraping status
 
 ### Plan
-1. **Expand bbox** to cover Gush Dan:
-   - Current: `(32.0303, 34.7422, 32.1463, 34.8513)` → ~4K listings
-   - Proposed: `(31.95, 34.70, 32.25, 34.92)` → should include Ramat Gan, Givatayim, Holon, Bat Yam
 
-2. **Test with larger area:**
-   ```python
-   GUSH_DAN_BBOX = (31.95, 34.70, 32.25, 34.92)
-   GRID_SIZE = 25
-   ZOOM = 16
-   ```
+#### Phase 1: CLI Development
+- [ ] Create `src/cli.py` module
+- [ ] Implement `scrape_city()` function that:
+  - Takes city name as parameter
+  - Loads neighborhoods from `data/mappings/city_to_neighborhoods.json`
+  - Uses existing `scrape_city_by_neighborhoods.py` logic
+  - Exports to `data/output/`
+- [ ] Add command-line argument parsing (argparse)
+- [ ] Add progress indicators
+- [ ] Add error handling
 
-3. **Multi-city scraper** after confirming coverage
+#### Phase 2: Integration
+- [ ] Integrate CLI with existing scraper modules
+- [ ] Ensure proper session management
+- [ ] Add rate limiting between neighborhoods
+- [ ] Add deduplication by URL
+
+#### Phase 3: Testing
+- [ ] Test CLI with Tel Aviv
+- [ ] Test CLI with other cities
+- [ ] Verify output Parquet files
+- [ ] Test error cases (invalid city, missing mappings, etc.)
+
+#### Phase 4: API (Optional)
+- [ ] Decide on framework (Flask/FastAPI)
+- [ ] Implement endpoints
+- [ ] Add async support if needed
+- [ ] Add status tracking
+
+### Technical Notes
+- Use existing `scrape_city_by_neighborhoods.py` as reference
+- Neighborhood IDs loaded from `data/mappings/city_to_neighborhoods.json`
+- Neighborhood details from `data/mappings/neighborhood_details.json`
+- Output format: `{city_name}_neighborhoods_{timestamp}.parquet`
+- All 25 fields extracted (including new: lat, lon, area, images, sqm_build)
+
+### Success Criteria
+- ✅ CLI can scrape any city by name
+- ✅ Automatically loads neighborhood IDs from mappings
+- ✅ Produces valid Parquet files with all 25 fields
+- ✅ Handles errors gracefully
+- ✅ Progress feedback during scraping
 
 ---

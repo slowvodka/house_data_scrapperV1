@@ -104,7 +104,8 @@ class TestParquetExporterConversion:
 
         expected_columns = [
             "city", "url", "scraped_at",
-            "price", "rooms", "floor", "sqm", "address", "neighborhood", "asset_type", "description",
+            "price", "rooms", "floor", "sqm", "sqm_build", "address", "area", "neighborhood", 
+            "latitude", "longitude", "asset_type", "description", "images",
             "total_floors", "year_built", "elevator",
             "parking", "balconies", "mamad", "storage_unit", "condition",
             "entrance_date"

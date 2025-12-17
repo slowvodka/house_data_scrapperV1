@@ -22,7 +22,7 @@ from typing import Dict, List, Tuple
 CITY_DATA: Dict[str, Dict] = {
     "תל אביב": {
         "id": 5000,
-        "bbox": (32.0303, 34.7422, 32.1463, 34.8513),
+        "bbox": (31.95, 34.70, 32.25, 34.92),  # Gush Dan metropolitan area
     },
     "ירושלים": {
         "id": 3000,

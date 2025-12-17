@@ -9,11 +9,15 @@ from src.exporter import ParquetExporter
 
 # Scraping parameters
 CITY = "תל אביב"
-GRID_SIZE = 20  # Very fine grid - brute force
+GRID_SIZE = 25  # Larger grid for Gush Dan metropolitan area
 ZOOM = 16  # Higher zoom for smaller areas
 
-# Original Tel Aviv bbox from OSM
-ORIGINAL_BBOX = (32.0303, 34.7422, 32.1463, 34.8513)
+# Gush Dan bbox (includes Tel Aviv, Ramat Gan, Givatayim, Holon, Bat Yam, Bnei Brak)
+# We'll filter to only Tel Aviv listings after scraping
+GUSH_DAN_BBOX = (31.95, 34.70, 32.25, 34.92)
+
+# Tel Aviv city names as returned by API (may include variations)
+TEL_AVIV_NAMES = ["תל אביב יפו", "תל אביב"]  # API returns "תל אביב יפו"
 
 
 def main():
@@ -26,10 +30,11 @@ def main():
     parser = ListingParser()
     exporter = ParquetExporter()
 
-    # Use original Tel Aviv bbox - brute force with fine grid
-    lat_min, lon_min, lat_max, lon_max = ORIGINAL_BBOX
-    print(f"Bbox: {ORIGINAL_BBOX}")
+    # Use Gush Dan bbox - covers metropolitan area
+    lat_min, lon_min, lat_max, lon_max = GUSH_DAN_BBOX
+    print(f"Bbox: {GUSH_DAN_BBOX} (Gush Dan metropolitan area)")
     print(f"Grid: {GRID_SIZE}x{GRID_SIZE}, Zoom: {ZOOM}")
+    print("Note: Filtering to Tel Aviv listings only")
 
     # Initialize session
     print("\nInitializing session...")
@@ -40,6 +45,7 @@ def main():
     lon_step = (lon_max - lon_min) / GRID_SIZE
 
     all_listings = {}  # url -> Listing (for deduplication)
+    total_scraped = 0  # Track total listings before filtering
     total_requests = GRID_SIZE * GRID_SIZE
 
     print(f"\nScraping {total_requests} grid cells...")
@@ -57,16 +63,19 @@ def main():
             try:
                 result = client.fetch_map_listings(bbox=cell_bbox, zoom=ZOOM)
                 listings = parser.parse_map_response(result)
+                total_scraped += len(listings)
 
-                # Deduplicate by URL
+                # Filter to only Tel Aviv listings and deduplicate by URL
                 new_count = 0
                 for listing in listings:
-                    if listing.url not in all_listings:
-                        all_listings[listing.url] = listing
-                        new_count += 1
+                    # Only keep listings from Tel Aviv
+                    if listing.city in TEL_AVIV_NAMES:
+                        if listing.url not in all_listings:
+                            all_listings[listing.url] = listing
+                            new_count += 1
 
                 print(f"  [{request_count}/{total_requests}] "
-                      f"{len(listings)} listings, +{new_count} new")
+                      f"{len(listings)} listings, +{new_count} Tel Aviv new")
 
             except Exception as e:
                 print(f"  [{request_count}/{total_requests}] ERROR: {e}")
@@ -75,11 +84,12 @@ def main():
 
     print()
     print("=" * 50)
-    print(f"Total unique listings: {len(all_listings)}")
+    print(f"Total listings scraped: {total_scraped}")
+    print(f"Tel Aviv listings (filtered): {len(all_listings)}")
     print("=" * 50)
 
     if all_listings:
-        # Export to Parquet
+        # Export to Parquet (only Tel Aviv listings)
         listings_list = list(all_listings.values())
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         filename = f"tel_aviv_{timestamp}.parquet"
@@ -94,6 +104,8 @@ def main():
             price_str = f"{listing.price:,} ILS" if listing.price else "Price N/A"
             print(f"  - {listing.city}: {listing.address}, "
                   f"{listing.rooms} rooms, {price_str}")
+    else:
+        print("\nNo Tel Aviv listings found!")
 
     client.close()
     print("\nDone!")

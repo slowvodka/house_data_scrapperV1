@@ -96,8 +96,6 @@ class Yad2Scraper:
         Raises:
             ValueError: If city name is not recognized.
         """
-        from src.api_client import Yad2ApiClient
-        
         city_id = self.config.get_city_id(city_name)
         all_listings: List[Listing] = []
         seen_urls: set = set()  # Track unique listings by URL

@@ -29,10 +29,15 @@ LISTING_SCHEMA = pa.schema([
     ("rooms", pa.float64()),
     ("floor", pa.int32()),
     ("sqm", pa.int32()),
+    ("sqm_build", pa.int32()),
     ("address", pa.string()),
+    ("area", pa.string()),
     ("neighborhood", pa.string()),
+    ("latitude", pa.float64()),
+    ("longitude", pa.float64()),
     ("asset_type", pa.string()),
     ("description", pa.string()),
+    ("images", pa.list_(pa.string())),
 
     # Building information (nullable)
     ("total_floors", pa.int32()),
