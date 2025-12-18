@@ -6,8 +6,9 @@ and export to Parquet format with explicit schema definition.
 """
 
 from dataclasses import asdict, fields
+from datetime import datetime
 from pathlib import Path
-from typing import List
+from typing import List, Optional
 
 import pandas as pd
 import pyarrow as pa
@@ -95,17 +96,68 @@ class ParquetExporter:
 
         return df
 
-    def export(self, listings: List[Listing], output_path: str) -> None:
+    def generate_output_path(
+        self, base_output_path: str, city_name: str, date: Optional[datetime] = None
+    ) -> Path:
+        """
+        Generate output path in the format: {base_output_path}/{city_name}/{YYYYMMDD}_{city_name}.parquet
+
+        Args:
+            base_output_path: Base directory for output files (e.g., "data/output").
+            city_name: City name (will be sanitized for filesystem).
+            date: Optional datetime object. If None, uses current date.
+
+        Returns:
+            Path object pointing to the output file.
+        """
+        if date is None:
+            date = datetime.now()
+
+        # Sanitize city name for filesystem (replace spaces and special chars)
+        city_safe = city_name.replace(" ", "_").replace("/", "_")
+        date_str = date.strftime("%Y%m%d")
+
+        # Structure: {base_output_path}/{city_name}/{YYYYMMDD}_{city_name}.parquet
+        output_path = Path(base_output_path) / city_safe / f"{date_str}_{city_safe}.parquet"
+
+        return output_path
+
+    def export(
+        self,
+        listings: List[Listing],
+        output_path: str,
+        city_name: Optional[str] = None,
+        base_output_path: Optional[str] = None,
+        date: Optional[datetime] = None,
+    ) -> Path:
         """
         Export listings to a Parquet file with explicit schema.
 
+        Supports two modes:
+        1. Direct path mode: Provide `output_path` directly (backward compatible)
+        2. Structured mode: Provide `city_name` and `base_output_path` to generate
+           path in format: {base_output_path}/{city_name}/{YYYYMMDD}_{city_name}.parquet
+
         Args:
             listings: List of Listing dataclass instances to export.
-            output_path: Path where the Parquet file will be saved.
-                        Parent directories will be created if they don't exist.
+            output_path: Direct path where the Parquet file will be saved.
+                        If `city_name` and `base_output_path` are provided, this is ignored.
+            city_name: City name for structured output path (optional).
+            base_output_path: Base directory for structured output (optional).
+            date: Optional datetime object for structured output. If None, uses current date.
+
+        Returns:
+            Path object pointing to the created file.
         """
+        # Determine output path
+        if city_name and base_output_path:
+            # Structured mode: generate path
+            path = self.generate_output_path(base_output_path, city_name, date)
+        else:
+            # Direct path mode (backward compatible)
+            path = Path(output_path)
+
         # Ensure parent directories exist
-        path = Path(output_path)
         path.parent.mkdir(parents=True, exist_ok=True)
 
         # Convert to DataFrame
@@ -119,7 +171,9 @@ class ParquetExporter:
             table = pa.Table.from_pandas(df, schema=self.schema, preserve_index=False)
 
         # Write to Parquet with schema
-        pq.write_table(table, output_path)
+        pq.write_table(table, str(path))
+
+        return path
 
     def get_schema(self) -> pa.Schema:
         """

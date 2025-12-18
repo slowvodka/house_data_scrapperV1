@@ -53,16 +53,16 @@ house_data_scrapper/
 
 ### Plan
 
-#### Phase 1: CLI Development
-- [ ] Create `src/cli.py` module
-- [ ] Implement `scrape_city()` function that:
-  - Takes city name as parameter
-  - Loads neighborhoods from `data/mappings/city_to_neighborhoods.json`
-  - Uses existing `scrape_city_by_neighborhoods.py` logic
-  - Exports to `data/output/`
-- [ ] Add command-line argument parsing (argparse)
-- [ ] Add progress indicators
-- [ ] Add error handling
+#### Phase 1: CLI Development ✅
+- [x] Create `src/cli.py` module ✅
+- [x] Implement `scrape_city()` function that:
+  - Takes city name as parameter ✅
+  - Loads neighborhoods from `data/mappings/city_to_neighborhoods.json` ✅
+  - Uses existing `scrape_city_by_neighborhoods.py` logic ✅
+  - Exports to `data/output/` ✅
+- [x] Add command-line argument parsing (argparse) ✅
+- [x] Add progress indicators (--verbose flag) ✅
+- [x] Add error handling ✅
 
 #### Phase 2: Integration
 - [ ] Integrate CLI with existing scraper modules
@@ -70,11 +70,12 @@ house_data_scrapper/
 - [ ] Add rate limiting between neighborhoods
 - [ ] Add deduplication by URL
 
-#### Phase 3: Testing
-- [ ] Test CLI with Tel Aviv
-- [ ] Test CLI with other cities
-- [ ] Verify output Parquet files
-- [ ] Test error cases (invalid city, missing mappings, etc.)
+#### Phase 3: Testing ✅
+- [x] Test CLI with Tel Aviv ✅
+- [x] Test CLI with other cities ✅
+- [x] Verify output Parquet files ✅
+- [x] Test error cases (invalid city, missing mappings, etc.) ✅
+- [x] Write unit tests (12 tests passing) ✅
 
 #### Phase 4: API (Optional)
 - [ ] Decide on framework (Flask/FastAPI)
@@ -86,7 +87,8 @@ house_data_scrapper/
 - Use existing `scrape_city_by_neighborhoods.py` as reference
 - Neighborhood IDs loaded from `data/mappings/city_to_neighborhoods.json`
 - Neighborhood details from `data/mappings/neighborhood_details.json`
-- Output format: `{city_name}_neighborhoods_{timestamp}.parquet`
+- Output format: `{city_name}/{YYYYMMDD}_{city_name}.parquet` (structured by city/date)
+- Same-day scrapes overwrite the file (one file per city per day)
 - All 25 fields extracted (including new: lat, lon, area, images, sqm_build)
 
 ### Success Criteria

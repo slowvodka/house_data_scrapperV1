@@ -89,13 +89,15 @@ def main():
     print("=" * 50)
 
     if all_listings:
-        # Export to Parquet (only Tel Aviv listings)
+        # Export to Parquet using new structure: {city_name}/{YYYYMMDD}_{city_name}.parquet
         listings_list = list(all_listings.values())
-        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        filename = f"tel_aviv_{timestamp}.parquet"
-        output_path = Path(config.output_path) / filename
-
-        exporter.export(listings_list, output_path)
+        output_path = exporter.export(
+            listings_list,
+            output_path="",  # Ignored when using structured mode
+            city_name=CITY,
+            base_output_path=config.output_path,
+            date=datetime.now(),
+        )
         print(f"\nExported to: {output_path}")
 
         # Show sample

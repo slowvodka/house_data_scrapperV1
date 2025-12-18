@@ -40,9 +40,9 @@
 | 4 | API Client | `api_client.py` | 21 | ✅ Done |
 | 5 | Parser | `parser.py` | 28 | ✅ Done |
 | 6 | Scraper | `scraper.py` | 12 | ✅ Done |
-| 7 | CLI | `main.py` | - | ⏳ Pending |
+| 7 | CLI | `cli.py` | 12 | ✅ Done |
 
-**Total: 100 tests passing**
+**Total: 112 tests passing** (100 + 12 CLI tests)
 
 ---
 
@@ -76,13 +76,26 @@
 
 ### exporter.py
 - `ParquetExporter.export()`: List[Listing] → .parquet file
+- `ParquetExporter.generate_output_path()`: Generates structured path: `{city_name}/{YYYYMMDD}_{city_name}.parquet`
 - `LISTING_SCHEMA`: explicit PyArrow schema for type safety
+- **Output Structure:** Files saved as `{base_output_path}/{city_name}/{YYYYMMDD}_{city_name}.parquet`
+  - Same-day scrapes overwrite the file (one file per city per day)
+  - Easy to sort and get most recent file
 
 ### scraper.py
 - `Yad2Scraper.create(config)`: factory method (handles cookie init)
 - `scrape_city()`: loops all property types, dedupes by URL
 - `scrape_all_cities()`: loops all config.cities
 - `run()`: full pipeline → Parquet file
+
+### cli.py
+- `scrape_city()`: Scrape single city by neighborhoods
+- `scrape_command()`: Execute scrape command for one or more cities
+- `list_cities_command()`: List all available cities from mappings
+- `parse_args()`: Parse command-line arguments with argparse
+- `main()`: CLI entry point
+- **Usage:** `python -m src.cli scrape "תל אביב יפו"` or `python -m src.cli list-cities`
+- **Features:** Multiple cities, --verbose flag, --output flag, error handling
 
 ---
 

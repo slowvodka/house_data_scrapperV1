@@ -116,7 +116,9 @@ class ScraperConfig:
     Attributes:
         cities: List of city names to scrape (Hebrew names supported).
         api_base_url: Base URL for Yad2 recommendations API.
-        output_path: Directory path for output Parquet files.
+        output_path: Base directory path for output Parquet files.
+                     Files are saved in structure: {output_path}/{city_name}/{YYYYMMDD}_{city_name}.parquet
+                     Same-day scrapes overwrite the file for that city.
         min_delay: Minimum delay between requests in seconds.
         max_delay: Maximum delay between requests in seconds.
         request_timeout: HTTP request timeout in seconds.

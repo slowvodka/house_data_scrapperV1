@@ -170,14 +170,15 @@ def scrape_city_by_neighborhoods(city_name: str, city_id: int = None):
     print("=" * 70)
     
     if all_listings:
-        # Export to Parquet
+        # Export to Parquet using new structure: {city_name}/{YYYYMMDD}_{city_name}.parquet
         listings_list = list(all_listings.values())
-        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        city_safe = city_name.replace(" ", "_").replace("/", "_")
-        filename = f"{city_safe}_neighborhoods_{timestamp}.parquet"
-        output_path = Path(config.output_path) / filename
-        
-        exporter.export(listings_list, output_path)
+        output_path = exporter.export(
+            listings_list,
+            output_path="",  # Ignored when using structured mode
+            city_name=city_name,
+            base_output_path=config.output_path,
+            date=datetime.now(),
+        )
         print(f"\nExported to: {output_path}")
         
         # Show statistics

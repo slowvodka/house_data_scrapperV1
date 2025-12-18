@@ -241,3 +241,89 @@ class TestParquetExporterEdgeCases:
         assert len(df_read) == 1
         assert df_read.iloc[0]["city"] == "ירושלים"
 
+
+class TestParquetExporterStructuredOutput:
+    """Test structured output path generation (city/date format)."""
+
+    def test_generate_output_path_creates_correct_structure(self):
+        """generate_output_path should create path in format: {city}/{YYYYMMDD}_{city}.parquet"""
+        exporter = ParquetExporter()
+        test_date = datetime(2025, 12, 18, 10, 30, 0)
+        path = exporter.generate_output_path("data/output", "תל אביב", test_date)
+
+        assert path.parent.name == "תל_אביב"
+        assert path.name == "20251218_תל_אביב.parquet"
+        assert str(path.parent.parent) == str(Path("data/output"))
+
+    def test_generate_output_path_sanitizes_city_name(self):
+        """generate_output_path should sanitize city names for filesystem."""
+        exporter = ParquetExporter()
+        test_date = datetime(2025, 12, 18)
+        path = exporter.generate_output_path("data/output", "תל אביב יפו", test_date)
+
+        # Should replace spaces with underscores
+        assert path.parent.name == "תל_אביב_יפו"
+        assert path.name == "20251218_תל_אביב_יפו.parquet"
+
+    def test_generate_output_path_uses_current_date_if_none(self):
+        """generate_output_path should use current date if date is None."""
+        exporter = ParquetExporter()
+        path = exporter.generate_output_path("data/output", "ירושלים")
+
+        # Should use today's date
+        today = datetime.now().strftime("%Y%m%d")
+        assert path.name.startswith(today)
+        assert path.name.endswith("_ירושלים.parquet")
+
+    def test_export_with_structured_path(self, sample_listings, temp_output_dir):
+        """Export should work with structured path mode."""
+        exporter = ParquetExporter()
+        test_date = datetime(2025, 12, 18)
+
+        output_path = exporter.export(
+            sample_listings,
+            output_path="",  # Ignored in structured mode
+            city_name="תל אביב",
+            base_output_path=temp_output_dir,
+            date=test_date,
+        )
+
+        # Verify file exists at correct location
+        assert output_path.exists()
+        assert output_path.parent.name == "תל_אביב"
+        assert output_path.name == "20251218_תל_אביב.parquet"
+
+        # Verify file is readable
+        df_read = pd.read_parquet(output_path)
+        assert len(df_read) == 2
+
+    def test_export_overwrites_same_day_file(self, sample_listings, temp_output_dir):
+        """Export should overwrite file if same city and date."""
+        exporter = ParquetExporter()
+        test_date = datetime(2025, 12, 18)
+
+        # Export first time
+        path1 = exporter.export(
+            sample_listings[:1],  # One listing
+            output_path="",
+            city_name="תל אביב",
+            base_output_path=temp_output_dir,
+            date=test_date,
+        )
+
+        # Export second time with same date (should overwrite)
+        path2 = exporter.export(
+            sample_listings,  # Two listings
+            output_path="",
+            city_name="תל אביב",
+            base_output_path=temp_output_dir,
+            date=test_date,
+        )
+
+        # Paths should be the same
+        assert path1 == path2
+
+        # File should have 2 listings (overwritten)
+        df_read = pd.read_parquet(path2)
+        assert len(df_read) == 2
+
