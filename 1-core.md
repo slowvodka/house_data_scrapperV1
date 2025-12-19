@@ -1,11 +1,21 @@
-# 📘 Yad2 Scraper - Project Core
+# 📘 House Data Scraper & Investment Analysis - Project Core
 
 ## Project Objective
 
-**Goal:** Build a robust, test-driven scraping engine to extract comprehensive real estate data from yad2.co.il (Israeli classifieds site).
+**Goal:** Build a comprehensive real estate investment analysis system that:
+1. Scrapes apartment listings from yad2.co.il
+2. Calculates investment scenarios and ROI projections
+3. Projects long-term investment performance
 
-**Input:** List of cities in Hebrew (e.g., "תל אביב", "רמת גן")  
-**Output:** Parquet files with structured listing data  
+**Phase 1 (Complete):** Scraping engine - Extract comprehensive real estate data  
+**Phase 4 (Next):** Scenario Calculator - Model investment scenarios with ROI, cash flow, NPV, IRR  
+**Phase 5 (Next):** Timeline Projection - Project cash flows and returns over time  
+**Phase 2-3 (Future):** Price prediction model and investment scoring system
+
+**Input:** List of cities (English or Hebrew)  
+**Output:** 
+- Phase 1: Parquet files with structured listing data
+- Phase 4-5: Investment analysis reports with scenario comparisons
 **Method:** API requests (primary), Playwright browser automation (fallback)
 
 ---
@@ -32,17 +42,39 @@
 
 ## Phase Status
 
-| Phase | Module | File | Tests | Status |
-|-------|--------|------|-------|--------|
-| 1 | Config | `config.py` | 28 | ✅ Done |
-| 2 | Models | `models.py` | - | ✅ Done |
-| 3 | Exporter | `exporter.py` | 11 | ✅ Done |
-| 4 | API Client | `api_client.py` | 21 | ✅ Done |
-| 5 | Parser | `parser.py` | 28 | ✅ Done |
-| 6 | Scraper | `scraper.py` | 12 | ✅ Done |
-| 7 | CLI | `cli.py` | 12 | ✅ Done |
+### Phase 1: Scraping Engine ✅ COMPLETE
+
+| Module | File | Tests | Status |
+|--------|------|-------|--------|
+| Config | `scraper/config.py` | 28 | ✅ Done |
+| Models | `scraper/models.py` | - | ✅ Done |
+| Exporter | `scraper/exporter.py` | 11 | ✅ Done |
+| API Client | `scraper/api_client.py` | 21 | ✅ Done |
+| Parser | `scraper/parser.py` | 28 | ✅ Done |
+| Scraper | `scraper/scraper.py` | 12 | ✅ Done |
+| CLI | `scraper/cli.py` | 12 | ✅ Done |
 
 **Total: 112 tests passing** (100 + 12 CLI tests)
+
+### Phase 2: Price Prediction Model 🔜 FUTURE
+- Train regression model on historical data
+- Predict property prices based on features
+- Compare predicted vs actual prices
+
+### Phase 3: Investment Scoring System 🔜 FUTURE
+- Calculate multiple ranking metrics
+- Combine into composite score
+- Rank properties by investment potential
+
+### Phase 4: Scenario Calculator 🎯 NEXT
+- Model different investment scenarios (A, B, C)
+- Calculate ROI, cash flow, NPV, IRR
+- Compare financing options
+
+### Phase 5: Timeline Projection 🎯 NEXT
+- Project cash flows over time
+- Calculate cumulative returns
+- Visualize investment performance
 
 ---
 

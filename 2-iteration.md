@@ -1,25 +1,21 @@
 # 🔄 Current Iteration
 
-## ✅ Session Complete: CLI Phase Finalized
+## 🎯 Next Phase: Investment Analysis Modules
 
-**Achievement:** CLI interface complete with English name support and structured output
+**Focus:** Phase 4 (Scenario Calculator) and Phase 5 (Timeline Projection)
 
-### Completed This Session
-- [x] Implemented CLI with argparse ✅
-- [x] Added English-to-Hebrew city name conversion ✅
-- [x] Implemented structured output (city/date format) ✅
-- [x] Added scrape and list-cities commands ✅
-- [x] Added --verbose and --output flags ✅
-- [x] Wrote 12 CLI unit tests ✅
-- [x] Updated documentation ✅
-- [x] All 117 tests passing ✅
+### Phase Status Overview
+- ✅ **Phase 1: Scraping Engine** - COMPLETE (112 tests passing)
+- 🔜 **Phase 2: Price Prediction** - DEFERRED (future work)
+- 🔜 **Phase 3: Investment Scoring** - DEFERRED (future work)
+- 🎯 **Phase 4: Scenario Calculator** - NEXT (starting now)
+- 🎯 **Phase 5: Timeline Projection** - NEXT (after Phase 4)
 
 ### Current State
-- **CLI Phase:** ✅ Complete
-- **117 tests passing** (105 + 12 CLI)
-- **English name support** - CLI accepts English names, converts to Hebrew internally
-- **Structured output** - Files saved as `{city_name}/{YYYYMMDD}_{city_name}.parquet`
-- **99 cities** available in mappings
+- **Scraping Engine:** ✅ Complete and tested
+- **Data Available:** Parquet files with 25 fields per listing
+- **Next Step:** Build investment analysis modules based on Excel logic
+- **Reference:** `EXCEL_ANALYSIS.md` contains detailed breakdown of Excel formulas and logic
 
 ### Project Structure
 ```
@@ -37,66 +33,66 @@ house_data_scrapper/
 
 ---
 
-## 🎯 Next Session: API Development (Optional)
+## 🎯 Next Session: Phase 4 - Scenario Calculator
 
-**Goal:** Build REST API interface for scraping cities (if needed)
+**Goal:** Build investment scenario calculator based on Excel logic
 
-### Requirements
-1. **CLI Interface:**
-   - Accept city name as input
-   - Load neighborhood IDs from `data/mappings/city_to_neighborhoods.json`
-   - Scrape all neighborhoods for that city
-   - Export to Parquet file
+### Requirements Analysis (From Excel)
+1. **Input Data:**
+   - Property price
+   - Down payment percentage
+   - Loan terms (interest rate, duration)
+   - Expected rental income
+   - Operating expenses
 
-2. **API Endpoints (if needed):**
-   - GET `/cities` - List available cities
-   - GET `/cities/{city_name}/neighborhoods` - List neighborhoods for city
-   - POST `/scrape/{city_name}` - Trigger scraping for a city
-   - GET `/scrape/{city_name}/status` - Check scraping status
+2. **Scenarios:**
+   - Scenario A (Conservative)
+   - Scenario B (Moderate)
+   - Scenario C (Aggressive)
+   - Each with different assumptions (down payment %, interest rate, etc.)
+
+3. **Calculations:**
+   - Monthly mortgage payment
+   - Monthly cash flow (rent - expenses - mortgage)
+   - Annual cash flow
+   - ROI (Return on Investment)
+   - NPV (Net Present Value)
+   - IRR (Internal Rate of Return)
 
 ### Plan
 
-#### Phase 1: CLI Development ✅ COMPLETE
-- [x] Create `scraper/cli.py` module ✅
-- [x] Implement `scrape_city()` function ✅
-- [x] Add English-to-Hebrew name conversion ✅
-- [x] Add command-line argument parsing (argparse) ✅
-- [x] Add progress indicators (--verbose flag) ✅
-- [x] Add error handling ✅
-- [x] Implement structured output (city/date format) ✅
+#### Phase 4: Scenario Calculator
+- [ ] Create `analyzer/` module structure
+- [ ] Design data models for scenarios
+- [ ] Implement mortgage payment calculator
+- [ ] Implement cash flow calculator
+- [ ] Implement ROI calculator
+- [ ] Implement NPV calculator
+- [ ] Implement IRR calculator
+- [ ] Create scenario comparison engine
+- [ ] Write unit tests
+- [ ] Create CLI interface for scenario analysis
 
-#### Phase 2: Integration
-- [ ] Integrate CLI with existing scraper modules
-- [ ] Ensure proper session management
-- [ ] Add rate limiting between neighborhoods
-- [ ] Add deduplication by URL
-
-#### Phase 3: Testing ✅
-- [x] Test CLI with Tel Aviv ✅
-- [x] Test CLI with other cities ✅
-- [x] Verify output Parquet files ✅
-- [x] Test error cases (invalid city, missing mappings, etc.) ✅
-- [x] Write unit tests (12 tests passing) ✅
-
-#### Phase 4: API (Optional)
-- [ ] Decide on framework (Flask/FastAPI)
-- [ ] Implement endpoints
-- [ ] Add async support if needed
-- [ ] Add status tracking
+#### Phase 5: Timeline Projection (After Phase 4)
+- [ ] Design timeline data structure
+- [ ] Implement monthly cash flow projection
+- [ ] Implement cumulative return calculations
+- [ ] Implement property appreciation modeling
+- [ ] Implement loan paydown tracking
+- [ ] Create visualization/export functionality
+- [ ] Write unit tests
 
 ### Technical Notes
-- Use existing `scrape_city_by_neighborhoods.py` as reference
-- Neighborhood IDs loaded from `data/mappings/city_to_neighborhoods.json`
-- Neighborhood details from `data/mappings/neighborhood_details.json`
-- Output format: `{city_name}/{YYYYMMDD}_{city_name}.parquet` (structured by city/date)
-- Same-day scrapes overwrite the file (one file per city per day)
-- All 25 fields extracted (including new: lat, lon, area, images, sqm_build)
+- Reference: `EXCEL_ANALYSIS.md` for detailed Excel formula breakdown
+- Input: Read from scraped Parquet files (Phase 1 output)
+- Calculations: Replicate Excel formulas, but optimize where possible
+- Output: JSON/CSV reports + potential visualization
 
 ### Success Criteria
-- ✅ CLI can scrape any city by name
-- ✅ Automatically loads neighborhood IDs from mappings
-- ✅ Produces valid Parquet files with all 25 fields
-- ✅ Handles errors gracefully
-- ✅ Progress feedback during scraping
+- Can model 3 different investment scenarios
+- Accurately calculates ROI, NPV, IRR
+- Compares scenarios side-by-side
+- Handles edge cases (negative cash flow, etc.)
+- Well-tested with unit tests
 
 ---

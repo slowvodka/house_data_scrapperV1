@@ -126,7 +126,7 @@ responses           # Mock HTTP requests in tests
 ## 7. Project Structure (Target)
 ```
 house_data_scrapper/
-├── scraper/
+├── scraper/                # Phase 1: Scraping engine (COMPLETE)
 │   ├── __init__.py
 │   ├── config.py           # Configuration management
 │   ├── models.py           # Listing dataclass
@@ -136,13 +136,19 @@ house_data_scrapper/
 │   ├── scraper.py          # Main orchestration logic
 │   ├── cli.py              # Command-line interface
 │   └── browser.py          # Playwright browser (fallback)
+├── analyzer/               # Phase 4-5: Investment analysis (NEXT)
+│   ├── __init__.py
+│   ├── scenarios.py        # Scenario calculator
+│   ├── timeline.py         # Timeline projection
+│   └── calculators.py      # Financial calculators (ROI, NPV, IRR)
 ├── tests/
 │   ├── __init__.py
 │   ├── test_config.py
 │   ├── test_api_client.py
 │   ├── test_parser.py
 │   ├── test_exporter.py
-│   └── test_scraper.py
+│   ├── test_scraper.py
+│   └── test_analyzer/       # Tests for analyzer module
 ├── data/
 │   ├── mappings/           # JSON mapping files (city_to_neighborhoods.json, etc.)
 │   └── output/             # Parquet files go here
@@ -150,6 +156,7 @@ house_data_scrapper/
 ├── 1-core.md
 ├── 2-iteration.md
 ├── 3-scratchpad.md
+├── EXCEL_ANALYSIS.md       # Excel file analysis and logic breakdown
 ├── .cursorrules
 ├── requirements.txt
 ├── pyproject.toml
