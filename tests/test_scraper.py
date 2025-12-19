@@ -3,6 +3,8 @@ Unit tests for the Scraper Module.
 
 TDD Phase: RED - Writing tests before implementation.
 Tests the main orchestration logic for scraping Yad2 listings.
+
+Run only scraper tests with: pytest -m scraper
 """
 
 import pytest
@@ -17,6 +19,9 @@ from scraper.api_client import Yad2ApiClient
 from scraper.parser import ListingParser
 from scraper.exporter import ParquetExporter
 from scraper.models import Listing
+
+
+pytestmark = pytest.mark.scraper
 
 
 # Sample API response for testing

@@ -2,10 +2,15 @@
 Unit tests for the Configuration Module.
 
 TDD Phase: RED - Writing tests before implementation.
+
+Run only scraper tests with: pytest -m scraper
 """
 
 import pytest
 from scraper.config import ScraperConfig, CITY_ID_MAP
+
+
+pytestmark = pytest.mark.scraper
 
 
 class TestScraperConfigDefaults:

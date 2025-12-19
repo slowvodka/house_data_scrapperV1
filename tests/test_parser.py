@@ -3,6 +3,8 @@ Unit tests for the Parser Module.
 
 TDD Phase: RED - Writing tests before implementation.
 Parses Yad2 API JSON responses into Listing dataclass objects.
+
+Run only scraper tests with: pytest -m scraper
 """
 
 import pytest
@@ -10,6 +12,9 @@ from datetime import datetime
 
 from scraper.parser import ListingParser
 from scraper.models import Listing
+
+
+pytestmark = pytest.mark.scraper
 
 
 # Sample API response data based on discovered API structure

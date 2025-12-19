@@ -3,6 +3,8 @@ Unit tests for the API Client Module.
 
 TDD Phase: RED - Writing tests before implementation.
 Tests the HTTP client for Yad2 recommendations API.
+
+Run only scraper tests with: pytest -m scraper
 """
 
 import pytest
@@ -11,6 +13,9 @@ from requests.exceptions import RequestException, Timeout
 
 from scraper.api_client import Yad2ApiClient
 from scraper.config import ScraperConfig
+
+
+pytestmark = pytest.mark.scraper
 
 
 class TestApiClientInitialization:

@@ -2,6 +2,8 @@
 Unit tests for the Exporter Module.
 
 TDD Phase: RED - Writing tests before implementation.
+
+Run only scraper tests with: pytest -m scraper
 """
 
 import os
@@ -14,6 +16,9 @@ import pytest
 
 from scraper.exporter import ParquetExporter
 from scraper.models import Listing
+
+
+pytestmark = pytest.mark.scraper
 
 
 @pytest.fixture

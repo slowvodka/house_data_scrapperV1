@@ -1,5 +1,7 @@
 """
 Unit tests for the CLI Module.
+
+Run only scraper tests with: pytest -m scraper
 """
 
 import json
@@ -15,6 +17,9 @@ from scraper.cli import (
     scrape_city,
     scrape_command,
 )
+
+
+pytestmark = pytest.mark.scraper
 
 
 class TestCLIArgumentParsing:
