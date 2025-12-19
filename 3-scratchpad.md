@@ -8,37 +8,42 @@
 
 ### Full Analysis Complete
 - ✅ Analyzed all 66+ rows in Scenario Calculator sheet
-- ✅ Identified 14 user inputs (yellow cells)
-- ✅ Translated all Hebrew labels to English
+- ✅ Separated User Inputs from Assumptions
 - ✅ Documented all 35+ formulas
 - ✅ Organized into 7 calculation groups
-- ✅ Identified logic issues
 
-### Calculation Groups
-1. **Loan Metrics** - loan amount, leverage, monthly payment, interest
-2. **Cash Flow** - rental yield, net cash flow, leveraged yield
-3. **Property Appreciation** - value growth, sale value, returns
-4. **Early Repayment** - remaining mortgage, penalties, net gain
-5. **Portfolio Comparison** - alternative investment calculations
-6. **Post-Mortgage Rental** - rental income after mortgage ends
-7. **Final Summary** - total value, profit, annual return
+### Input Structure (Clarified)
 
-### Class Structure (Improved)
-1. **ScenarioInputs** - All 14 user inputs
-2. **InvestmentRestrictions** - Validation rules
-3. **LoanMetrics** - Calculated loan values
-4. **CashFlowMetrics** - Calculated cash flow
-5. **AppreciationMetrics** - Returns and appreciation
-6. **EarlyRepaymentMetrics** - Early repayment scenarios
-7. **PortfolioMetrics** - Alternative investment
-8. **ScenarioResult** - Complete results
-9. **ScenarioCalculator** - Main engine
+**User Inputs (Property-Specific - Required):**
+- `property_price` - Purchase price
+- `down_payment` - Equity amount
+- `available_cash` - Total cash available
+- `monthly_available` - Monthly investment capacity
+- `mortgage_term_years` - Loan duration
+- `years_until_sale` - When to sell
+- `urban_renewal_value` - Optional (max 400k)
 
-### Key Findings
-- Excel compares real estate vs portfolio investment
-- Uses PMT, FV, PV financial functions
-- Accounts for leverage, taxes (25% capital gains)
-- Missing: operating expenses, vacancy rate, inflation
+**Assumptions (Market Defaults - Customizable):**
+- `rental_yield` = 2.8% (monthly_rent = price * yield / 12)
+- `mortgage_rate` = 4.8%
+- `appreciation_rate` = 4%
+- `rent_increase_rate` = 3%
+- `portfolio_return_rate` = 7%
+- `risk_free_rate` = 3%
+- `early_repayment_rate` = 3.5%
+- `capital_gains_tax_rate` = 25%
+
+### Class Structure (10 Classes)
+1. **InvestmentAssumptions** - Market defaults with sensible values
+2. **ScenarioInputs** - Property-specific inputs (required)
+3. **InvestmentRestrictions** - Validation rules
+4. **LoanMetrics** - Calculated loan values
+5. **CashFlowMetrics** - Calculated cash flow
+6. **AppreciationMetrics** - Returns and appreciation
+7. **EarlyRepaymentMetrics** - Early repayment scenarios
+8. **PortfolioMetrics** - Alternative investment
+9. **ScenarioResult** - Complete results
+10. **ScenarioCalculator** - Main engine
 
 **Full design document:** `SCENARIO_CALCULATOR_DESIGN.md`
 

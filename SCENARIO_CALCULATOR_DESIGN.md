@@ -10,24 +10,36 @@ It calculates financial metrics including cash flow, ROI, leverage effects, and 
 
 ---
 
-## User Inputs Identified (from Excel Yellow Cells)
+## Input Structure
 
-| Row | Hebrew Label | English Name | Variable Name | Example Value | Description |
-|-----|-------------|--------------|---------------|---------------|-------------|
-| 2 | משך המשכנתא (שנים) | Mortgage term | `mortgage_term_years` | 20 | Duration of mortgage in years |
-| 3 | שנים עד המכירה | Years until sale | `years_until_sale` | 15 | When property will be sold |
-| 4 | מחיר הדירה | Property price | `property_price` | 2,650,000 | Purchase price |
-| 5 | כסף פנוי להשקעה | Available cash | `available_cash` | 2,650,000 | Total cash available for investment |
-| 6 | כמות ההון העצמי | Down payment | `down_payment` | varies | Equity/down payment amount |
-| 7 | סכום חודשי שפנוי | Monthly available | `monthly_available` | 10,000 | Monthly amount available for investment |
-| 12 | ריבית משכנתא | Mortgage interest rate | `mortgage_rate` | 0.048 | Annual interest rate (4.8%) |
-| 18 | מחיר השכירות | Monthly rent | `monthly_rent` | 6,300 | Expected monthly rental income |
-| 25 | שיעור עליית ערך | Appreciation rate | `appreciation_rate` | 0.04 | Annual property appreciation (4%) |
-| 27 | עליית ערך מפינוי בינוי | Urban renewal value | `urban_renewal_value` | ≤400,000 | Added value from urban renewal |
-| 39 | ריבית פירעון מוקדם | Early repayment rate | `early_repayment_rate` | 0.035 | Interest rate at early repayment |
-| 48 | תשואת תיק השקעות | Portfolio return | `portfolio_return_rate` | 0.07 | Annual return for alternative investment |
-| 58 | עליית מחירי שכירות | Rent increase rate | `rent_increase_rate` | 0.03 | Annual rent increase (3%) |
-| 63 | ריבית חסרת סיכון | Risk-free rate | `risk_free_rate` | 0.03 | Risk-free rate for discounting |
+### User Inputs (Property/Scenario Specific)
+These are specific to the property being analyzed and MUST be provided by the user.
+
+| Variable | Hebrew | Example | Description |
+|----------|--------|---------|-------------|
+| `property_price` | מחיר הדירה | 2,650,000 | Purchase price of the property |
+| `down_payment` | כמות ההון העצמי | 1,350,000 | Equity/down payment amount |
+| `available_cash` | כסף פנוי להשקעה | 2,650,000 | Total cash available for investment |
+| `monthly_available` | סכום חודשי שפנוי | 10,000 | Monthly amount available for investment |
+| `mortgage_term_years` | משך המשכנתא | 20 | Duration of mortgage in years |
+| `years_until_sale` | שנים עד המכירה | 15 | When property will be sold |
+| `urban_renewal_value` | עליית ערך מפינוי בינוי | 0 | Added value from urban renewal (max 400,000) |
+
+### Assumptions (Market Defaults - Customizable)
+These have sensible default values but CAN be overridden by the user.
+
+| Variable | Hebrew | Default | Description |
+|----------|--------|---------|-------------|
+| `rental_yield` | תשואת השכירות | 0.028 (2.8%) | Annual rental yield as % of property price |
+| `mortgage_rate` | ריבית משכנתא | 0.048 (4.8%) | Annual mortgage interest rate |
+| `appreciation_rate` | שיעור עליית ערך | 0.04 (4%) | Annual property appreciation rate |
+| `rent_increase_rate` | עליית מחירי שכירות | 0.03 (3%) | Annual rent increase rate |
+| `portfolio_return_rate` | תשואת תיק השקעות | 0.07 (7%) | Alternative investment annual return |
+| `risk_free_rate` | ריבית חסרת סיכון | 0.03 (3%) | Risk-free rate for discounting |
+| `early_repayment_rate` | ריבית פירעון מוקדם | 0.035 (3.5%) | Interest rate at early repayment |
+| `capital_gains_tax_rate` | מס רווח הון | 0.25 (25%) | Capital gains tax rate |
+
+**Note:** `monthly_rent` is CALCULATED from `property_price * rental_yield / 12`
 
 ---
 
@@ -51,7 +63,7 @@ It calculates financial metrics including cash flow, ROI, leverage effects, and 
 
 | Row | Hebrew | English | Variable | Formula |
 |-----|--------|---------|----------|---------|
-| 18 | מחיר השכירות | Monthly rent | `monthly_rent` | INPUT |
+| 18 | מחיר השכירות | Monthly rent | `monthly_rent` | `property_price * rental_yield / 12` |
 | 19 | תשואת השכירות | Rental yield | `rental_yield` | `monthly_rent * 12 / property_price` |
 | 20 | תזרים ריבית חודשי | Monthly interest flow | `monthly_interest_flow` | `monthly_rent - avg_monthly_interest` |
 | 21 | החזר קרן ממוצע | Avg principal payment | `avg_principal_payment` | `-loan_amount / 12 / mortgage_term` |
@@ -121,49 +133,66 @@ It calculates financial metrics including cash flow, ROI, leverage effects, and 
 
 ## Improved Class Structure
 
-### 1. `ScenarioInputs` (Dataclass)
-**All user inputs in one place**
+### 1. `InvestmentAssumptions` (Dataclass)
+**Market assumptions with sensible defaults - can be customized**
+
+```python
+@dataclass
+class InvestmentAssumptions:
+    """Market assumptions with default values. Can be customized by user."""
+    
+    # Rental
+    rental_yield: float = 0.028  # תשואת השכירות - Annual rental yield (2.8% of property price)
+    rent_increase_rate: float = 0.03  # עליית מחירי שכירות - Annual rent increase (3%)
+    
+    # Mortgage
+    mortgage_rate: float = 0.048  # ריבית משכנתא - Annual mortgage interest (4.8%)
+    early_repayment_rate: float = 0.035  # ריבית פירעון מוקדם - Rate at early repayment (3.5%)
+    
+    # Growth
+    appreciation_rate: float = 0.04  # שיעור עליית ערך - Annual property appreciation (4%)
+    
+    # Alternative Investment
+    portfolio_return_rate: float = 0.07  # תשואת תיק השקעות - Portfolio annual return (7%)
+    
+    # Other
+    risk_free_rate: float = 0.03  # ריבית חסרת סיכון - Risk-free rate for discounting (3%)
+    capital_gains_tax_rate: float = 0.25  # מס רווח הון - Capital gains tax (25%)
+```
+
+### 2. `ScenarioInputs` (Dataclass)
+**Property-specific user inputs - MUST be provided**
 
 ```python
 @dataclass
 class ScenarioInputs:
-    """All user inputs for the investment scenario."""
+    """Property-specific inputs that must be provided by user."""
     
     # Property Details
-    property_price: float  # מחיר הדירה - Purchase price
-    monthly_rent: float  # מחיר השכירות - Expected monthly rental income
-    urban_renewal_value: float = 0.0  # עליית ערך מפינוי בינוי - Added value (max 400,000)
+    property_price: float  # מחיר הדירה - Purchase price (required)
     
     # Investment Capital
-    available_cash: float  # כסף פנוי להשקעה - Total cash available
-    down_payment: float  # כמות ההון העצמי - Equity/down payment
-    monthly_available: float  # סכום חודשי שפנוי - Monthly investment capacity
+    down_payment: float  # כמות ההון העצמי - Equity/down payment (required)
+    available_cash: float  # כסף פנוי להשקעה - Total cash available (required)
+    monthly_available: float  # סכום חודשי שפנוי - Monthly investment capacity (required)
     
     # Time Parameters
-    mortgage_term_years: int  # משך המשכנתא - Mortgage duration in years
-    years_until_sale: int  # שנים עד המכירה - When property will be sold
+    mortgage_term_years: int  # משך המשכנתא - Mortgage duration in years (required)
+    years_until_sale: int  # שנים עד המכירה - When property will be sold (required)
     
-    # Interest Rates
-    mortgage_rate: float  # ריבית משכנתא - Annual mortgage interest (e.g., 0.048)
-    early_repayment_rate: float = 0.035  # ריבית פירעון מוקדם - Rate at early repayment
-    
-    # Growth Rates
-    appreciation_rate: float  # שיעור עליית ערך - Annual property appreciation (e.g., 0.04)
-    rent_increase_rate: float = 0.03  # עליית מחירי שכירות - Annual rent increase
-    
-    # Alternative Investment
-    portfolio_return_rate: float = 0.07  # תשואת תיק השקעות - Portfolio annual return
-    
-    # Other
-    risk_free_rate: float = 0.03  # ריבית חסרת סיכון - For discounting
-    capital_gains_tax_rate: float = 0.25  # מס רווח הון - Capital gains tax (25%)
+    # Optional
+    urban_renewal_value: float = 0.0  # עליית ערך מפינוי בינוי - Added value (max 400,000)
     
     def __post_init__(self):
         """Validate and cap values."""
         self.urban_renewal_value = min(self.urban_renewal_value, 400_000)
+    
+    def calculate_monthly_rent(self, rental_yield: float) -> float:
+        """Calculate monthly rent from property price and rental yield assumption."""
+        return self.property_price * rental_yield / 12
 ```
 
-### 2. `InvestmentRestrictions` (Dataclass)
+### 3. `InvestmentRestrictions` (Dataclass)
 **Validation rules and constraints**
 
 ```python
@@ -178,7 +207,7 @@ class InvestmentRestrictions:
     require_positive_cash_flow: bool = False  # Must have positive cash flow
 ```
 
-### 3. `LoanMetrics` (Dataclass)
+### 4. `LoanMetrics` (Dataclass)
 **Calculated loan-related values**
 
 ```python
@@ -197,7 +226,7 @@ class LoanMetrics:
     required_income: float  # הכנסות נדרשות (30% rule)
 ```
 
-### 4. `CashFlowMetrics` (Dataclass)
+### 5. `CashFlowMetrics` (Dataclass)
 **Calculated cash flow values**
 
 ```python
@@ -213,7 +242,7 @@ class CashFlowMetrics:
     net_leveraged_yield: float  # תשואה נטו ממונפת
 ```
 
-### 5. `AppreciationMetrics` (Dataclass)
+### 6. `AppreciationMetrics` (Dataclass)
 **Calculated appreciation values**
 
 ```python
@@ -231,7 +260,7 @@ class AppreciationMetrics:
     net_annual_return: float  # תשואה שנתית נטו
 ```
 
-### 6. `EarlyRepaymentMetrics` (Dataclass)
+### 7. `EarlyRepaymentMetrics` (Dataclass)
 **Early repayment calculations**
 
 ```python
@@ -246,7 +275,7 @@ class EarlyRepaymentMetrics:
     net_gain_property: float  # רווח נטו מהנכס
 ```
 
-### 7. `PortfolioMetrics` (Dataclass)
+### 8. `PortfolioMetrics` (Dataclass)
 **Alternative investment portfolio calculations**
 
 ```python
@@ -263,7 +292,7 @@ class PortfolioMetrics:
     net_portfolio_profit: float  # רווח נטו מתיק
 ```
 
-### 8. `ScenarioResult` (Dataclass)
+### 9. `ScenarioResult` (Dataclass)
 **Complete scenario calculation result**
 
 ```python
@@ -288,7 +317,7 @@ class ScenarioResult:
     validation_errors: List[str]
 ```
 
-### 9. `ScenarioCalculator` (Main Class)
+### 10. `ScenarioCalculator` (Main Class)
 **Main calculator orchestrating all calculations**
 
 ```python
@@ -298,10 +327,15 @@ class ScenarioCalculator:
     def __init__(
         self,
         inputs: ScenarioInputs,
+        assumptions: Optional[InvestmentAssumptions] = None,
         restrictions: Optional[InvestmentRestrictions] = None
     ):
         self.inputs = inputs
+        self.assumptions = assumptions or InvestmentAssumptions()  # Use defaults if not provided
         self.restrictions = restrictions or InvestmentRestrictions()
+        
+        # Calculate derived values
+        self.monthly_rent = inputs.calculate_monthly_rent(self.assumptions.rental_yield)
     
     def calculate_loan_metrics(self) -> LoanMetrics:
         """Calculate all loan-related metrics."""
