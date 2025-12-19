@@ -1,339 +1,446 @@
-# Phase 2: Scenario Calculator - Design Document
+# Phase 2: Scenario Calculator - Design Document (v2)
 
 ## Overview
 
-The Scenario Calculator models a single real estate investment scenario, calculating financial metrics including cash flow, ROI, NPV, and IRR based on user inputs and assumptions.
+The Scenario Calculator models a single real estate investment scenario, comparing:
+1. **Real Estate Investment** - Buy property with mortgage
+2. **Alternative Investment** - Invest the same money in a portfolio
 
-## Class Structure Design
-
-### 1. `InvestmentAssumptions` (Dataclass)
-**Purpose:** Holds all assumptions and parameters for the investment scenario
-
-```python
-@dataclass
-class InvestmentAssumptions:
-    """Investment scenario assumptions and parameters."""
-    
-    # Loan Parameters
-    loan_term_years: float  # Loan duration in years
-    interest_rate_annual: float  # Annual interest rate (as decimal, e.g., 0.048 for 4.8%)
-    
-    # Property Parameters  
-    property_price: float  # Purchase price of property
-    down_payment_amount: float  # Down payment amount
-    additional_purchase_costs: float  # Closing costs, fees, etc.
-    additional_investment_costs: float  # Renovation, improvements (max 400,000)
-    
-    # Income Parameters
-    monthly_rental_income: float  # Expected monthly rental income
-    
-    # Appreciation Parameters
-    annual_appreciation_rate: float  # Expected annual property appreciation (as decimal, e.g., 0.04 for 4%)
-    
-    # Restrictions/Constraints
-    max_mortgage_to_income_ratio: float = 0.3  # Max mortgage payment as % of income (30% rule)
-    max_additional_costs: float = 400000.0  # Maximum additional costs cap
-```
-
-**Variable Descriptions:**
-- `loan_term_years`: Duration of the mortgage loan in years
-- `interest_rate_annual`: Annual interest rate expressed as decimal (0.048 = 4.8%)
-- `property_price`: Total purchase price of the property
-- `down_payment_amount`: Initial cash down payment
-- `additional_purchase_costs`: One-time costs at purchase (legal fees, taxes, etc.)
-- `additional_investment_costs`: Renovation/improvement costs (capped at max_additional_costs)
-- `monthly_rental_income`: Expected monthly rental income
-- `annual_appreciation_rate`: Expected annual property value appreciation rate
-- `max_mortgage_to_income_ratio`: Maximum mortgage payment as percentage of income (default 30%)
-- `max_additional_costs`: Maximum cap for additional investment costs
+It calculates financial metrics including cash flow, ROI, leverage effects, and compares outcomes.
 
 ---
 
-### 2. `UserFeatures` (Dataclass)
-**Purpose:** Holds user-specific financial features and constraints
+## User Inputs Identified (from Excel Yellow Cells)
 
-```python
-@dataclass
-class UserFeatures:
-    """User financial features and constraints."""
-    
-    monthly_income: Optional[float] = None  # User's monthly income (for affordability check)
-    max_down_payment: Optional[float] = None  # Maximum down payment user can afford
-    max_monthly_payment: Optional[float] = None  # Maximum monthly payment user can afford
-    
-    # Risk Preferences
-    risk_tolerance: str = "moderate"  # conservative, moderate, aggressive
-    
-    # Restrictions
-    min_cash_flow: float = 0.0  # Minimum acceptable monthly cash flow
-    min_roi_threshold: float = 0.0  # Minimum acceptable ROI
-```
-
-**Variable Descriptions:**
-- `monthly_income`: User's monthly income (used for affordability calculations)
-- `max_down_payment`: Maximum down payment the user can afford
-- `max_monthly_payment`: Maximum monthly mortgage payment user can afford
-- `risk_tolerance`: User's risk preference level
-- `min_cash_flow`: Minimum acceptable monthly cash flow threshold
-- `min_roi_threshold`: Minimum acceptable return on investment threshold
+| Row | Hebrew Label | English Name | Variable Name | Example Value | Description |
+|-----|-------------|--------------|---------------|---------------|-------------|
+| 2 | משך המשכנתא (שנים) | Mortgage term | `mortgage_term_years` | 20 | Duration of mortgage in years |
+| 3 | שנים עד המכירה | Years until sale | `years_until_sale` | 15 | When property will be sold |
+| 4 | מחיר הדירה | Property price | `property_price` | 2,650,000 | Purchase price |
+| 5 | כסף פנוי להשקעה | Available cash | `available_cash` | 2,650,000 | Total cash available for investment |
+| 6 | כמות ההון העצמי | Down payment | `down_payment` | varies | Equity/down payment amount |
+| 7 | סכום חודשי שפנוי | Monthly available | `monthly_available` | 10,000 | Monthly amount available for investment |
+| 12 | ריבית משכנתא | Mortgage interest rate | `mortgage_rate` | 0.048 | Annual interest rate (4.8%) |
+| 18 | מחיר השכירות | Monthly rent | `monthly_rent` | 6,300 | Expected monthly rental income |
+| 25 | שיעור עליית ערך | Appreciation rate | `appreciation_rate` | 0.04 | Annual property appreciation (4%) |
+| 27 | עליית ערך מפינוי בינוי | Urban renewal value | `urban_renewal_value` | ≤400,000 | Added value from urban renewal |
+| 39 | ריבית פירעון מוקדם | Early repayment rate | `early_repayment_rate` | 0.035 | Interest rate at early repayment |
+| 48 | תשואת תיק השקעות | Portfolio return | `portfolio_return_rate` | 0.07 | Annual return for alternative investment |
+| 58 | עליית מחירי שכירות | Rent increase rate | `rent_increase_rate` | 0.03 | Annual rent increase (3%) |
+| 63 | ריבית חסרת סיכון | Risk-free rate | `risk_free_rate` | 0.03 | Risk-free rate for discounting |
 
 ---
 
-### 3. `InvestmentRestrictions` (Dataclass)
-**Purpose:** Holds validation rules and restrictions
+## Calculation Groups
+
+### Group 1: Loan Metrics (Rows 8-17)
+
+| Row | Hebrew | English | Variable | Formula |
+|-----|--------|---------|----------|---------|
+| 8 | גודל המשכנתא | Loan amount | `loan_amount` | `property_price - down_payment` |
+| 9 | שיעור המינוף | Leverage ratio | `leverage_ratio` | `loan_amount / property_price` |
+| 10 | שיעור ההון העצמי | Equity ratio | `equity_ratio` | `1 - leverage_ratio` |
+| 11 | מכפיל המינוף | Leverage multiplier | `leverage_multiplier` | `1 / equity_ratio` |
+| 13 | סך תשלומי המשכנתא | Total mortgage payments | `total_mortgage_payments` | `monthly_payment * 12 * mortgage_term` |
+| 14 | החזר חודשי | Monthly payment | `monthly_payment` | `PMT(rate/12, months, loan)` |
+| 15 | הכנסות נדרשות | Required income | `required_income` | `monthly_payment / 0.3` |
+| 16 | סך החזרי הריבית | Total interest | `total_interest` | `total_payments - loan_amount` |
+| 17 | ריבית חודשית ממוצעת | Avg monthly interest | `avg_monthly_interest` | `total_interest / 12 / mortgage_term` |
+
+### Group 2: Cash Flow (Rows 18-24)
+
+| Row | Hebrew | English | Variable | Formula |
+|-----|--------|---------|----------|---------|
+| 18 | מחיר השכירות | Monthly rent | `monthly_rent` | INPUT |
+| 19 | תשואת השכירות | Rental yield | `rental_yield` | `monthly_rent * 12 / property_price` |
+| 20 | תזרים ריבית חודשי | Monthly interest flow | `monthly_interest_flow` | `monthly_rent - avg_monthly_interest` |
+| 21 | החזר קרן ממוצע | Avg principal payment | `avg_principal_payment` | `-loan_amount / 12 / mortgage_term` |
+| 22 | תזרים חודשי נטו | Monthly net cash flow | `monthly_net_cash_flow` | `monthly_rent - monthly_payment` |
+| 23 | תשואת שכירות ממונפת | Leveraged rental yield | `leveraged_rental_yield` | `rental_yield * leverage_multiplier` |
+| 24 | תשואה נטו ממונפת | Net leveraged yield | `net_leveraged_yield` | `IF(loan>0, leveraged_yield - rate, leveraged_yield)` |
+
+### Group 3: Property Appreciation (Rows 25-35)
+
+| Row | Hebrew | English | Variable | Formula |
+|-----|--------|---------|----------|---------|
+| 25 | שיעור עליית ערך | Appreciation rate | `appreciation_rate` | INPUT |
+| 26 | עליית ערך הנכס | Property appreciation | `property_appreciation` | `((1+rate)^years - 1) * price` |
+| 27 | ערך פינוי בינוי | Urban renewal value | `urban_renewal_value` | INPUT (max 400,000) |
+| 28 | עליית ערך פינוי בינוי | Urban renewal appreciation | `urban_renewal_appreciation` | `((1+rate)^years - 1) * urban_renewal` |
+| 29 | עליית ערך כוללת | Total appreciation | `total_appreciation` | `urban_renewal + property_appreciation + urban_renewal_appreciation` |
+| 30 | שווי במכירה | Sale value | `sale_value` | `property_price + total_appreciation` |
+| 31 | שיעור תשואה כולל | Total return rate | `total_return_rate` | `(sale_value / property_price) - 1` |
+| 32 | תשואה שנתית | Annualized return | `annualized_return` | `((1 + total_return)^(1/years)) - 1` |
+| 33 | תשואה ממונפת | Leveraged return | `leveraged_return` | `annualized_return * leverage_multiplier` |
+| 34 | + תשואת שכירות | + rental yield | `with_rental_yield` | `leveraged_return + leveraged_rental_yield` |
+| 35 | תשואה שנתית נטו | Net annual return | `net_annual_return` | `with_rental_yield - mortgage_rate` |
+
+### Group 4: Early Repayment (Rows 37-44)
+
+| Row | Hebrew | English | Variable | Formula |
+|-----|--------|---------|----------|---------|
+| 38 | שארית משכנתא | Remaining mortgage | `remaining_mortgage` | `IF(years<term, ((term-years)/term)*total_payments, 0)` |
+| 40 | עמלת פירעון מוקדם | Early repayment penalty | `early_repayment_penalty` | `PV(old_rate) - PV(new_rate)` |
+| 41 | סך חוב לבנק | Total debt to bank | `total_debt_to_bank` | `remaining_mortgage + penalty` |
+| 43 | תקבול פחות חוב | Proceeds minus debt | `proceeds_minus_debt` | `sale_value - total_debt` |
+| 44 | רווח נטו | Net gain from property | `net_gain_property` | `proceeds_minus_debt - down_payment` |
+
+### Group 5: Alternative Investment Portfolio (Rows 46-54)
+
+| Row | Hebrew | English | Variable | Formula |
+|-----|--------|---------|----------|---------|
+| 47 | כסף בתיק השקעות | Cash in portfolio | `cash_in_portfolio` | `available_cash - down_payment` |
+| 48 | תשואת תיק | Portfolio return | `portfolio_return_rate` | INPUT |
+| 49 | שווי תיק ללא הפקדות | Portfolio value (initial) | `portfolio_initial_growth` | `initial * (1+rate)^years` |
+| 50 | הפקדות חודשיות | Monthly deposits | `monthly_deposits` | `monthly_available + monthly_cash_flow` |
+| 51 | צבירה מהפקדות | Accumulated deposits | `accumulated_deposits` | `FV(rate/12, months, -deposits)` |
+| 52 | שווי תיק כולל | Total portfolio value | `total_portfolio_value` | `initial_growth + accumulated_deposits` |
+| 53 | אחרי מס רווח הון | After capital gains tax | `portfolio_after_tax` | Complex formula (25% tax on gains) |
+| 54 | רווח נטו מתיק | Net portfolio profit | `net_portfolio_profit` | `after_tax - initial - all_deposits` |
+
+### Group 6: Post-Mortgage Rental (Rows 56-61)
+
+| Row | Hebrew | English | Variable | Formula |
+|-----|--------|---------|----------|---------|
+| 57 | שכירות אחרי פינוי בינוי | Rent after renewal | `rent_after_renewal` | `(price + urban_renewal) * yield / 12` |
+| 58 | עליית שכירות | Rent increase rate | `rent_increase_rate` | INPUT |
+| 59 | שכירות בתום משכנתא | Rent at mortgage end | `rent_at_mortgage_end` | `current_rent * (1+rate)^years` |
+| 60 | תקבולי שכירות | Rental receipts | `rental_receipts` | `FV(rate, months_after_mortgage, -rent)` |
+| 61 | אחרי מס | After tax | `rental_after_tax` | Complex formula (25% tax) |
+
+### Group 7: Final Summary (Rows 63-66)
+
+| Row | Hebrew | English | Variable | Formula |
+|-----|--------|---------|----------|---------|
+| 63 | ריבית חסרת סיכון | Risk-free rate | `risk_free_rate` | INPUT |
+| 64 | שווי כולל | Total value at sale | `total_value_at_sale` | `rental_after_tax + portfolio_after_tax + proceeds_minus_debt` |
+| 65 | רווח כולל | Total profit | `total_profit` | `rental_profit + portfolio_profit + property_profit` |
+| 66 | תשואה שנתית | Annual return | `annual_return` | `(total_value / initial_investment)^(1/years) - 1` |
+
+---
+
+## Improved Class Structure
+
+### 1. `ScenarioInputs` (Dataclass)
+**All user inputs in one place**
+
+```python
+@dataclass
+class ScenarioInputs:
+    """All user inputs for the investment scenario."""
+    
+    # Property Details
+    property_price: float  # מחיר הדירה - Purchase price
+    monthly_rent: float  # מחיר השכירות - Expected monthly rental income
+    urban_renewal_value: float = 0.0  # עליית ערך מפינוי בינוי - Added value (max 400,000)
+    
+    # Investment Capital
+    available_cash: float  # כסף פנוי להשקעה - Total cash available
+    down_payment: float  # כמות ההון העצמי - Equity/down payment
+    monthly_available: float  # סכום חודשי שפנוי - Monthly investment capacity
+    
+    # Time Parameters
+    mortgage_term_years: int  # משך המשכנתא - Mortgage duration in years
+    years_until_sale: int  # שנים עד המכירה - When property will be sold
+    
+    # Interest Rates
+    mortgage_rate: float  # ריבית משכנתא - Annual mortgage interest (e.g., 0.048)
+    early_repayment_rate: float = 0.035  # ריבית פירעון מוקדם - Rate at early repayment
+    
+    # Growth Rates
+    appreciation_rate: float  # שיעור עליית ערך - Annual property appreciation (e.g., 0.04)
+    rent_increase_rate: float = 0.03  # עליית מחירי שכירות - Annual rent increase
+    
+    # Alternative Investment
+    portfolio_return_rate: float = 0.07  # תשואת תיק השקעות - Portfolio annual return
+    
+    # Other
+    risk_free_rate: float = 0.03  # ריבית חסרת סיכון - For discounting
+    capital_gains_tax_rate: float = 0.25  # מס רווח הון - Capital gains tax (25%)
+    
+    def __post_init__(self):
+        """Validate and cap values."""
+        self.urban_renewal_value = min(self.urban_renewal_value, 400_000)
+```
+
+### 2. `InvestmentRestrictions` (Dataclass)
+**Validation rules and constraints**
 
 ```python
 @dataclass
 class InvestmentRestrictions:
-    """Investment validation rules and restrictions."""
+    """Investment validation rules and constraints."""
     
-    max_mortgage_to_income_ratio: float = 0.3  # 30% rule
-    min_down_payment_percentage: float = 0.0  # Minimum down payment as % of price
-    max_loan_to_value_ratio: float = 1.0  # Maximum LTV ratio
-    require_positive_cash_flow: bool = False  # Require positive cash flow
-    max_additional_costs: float = 400000.0  # Maximum additional costs
+    max_mortgage_to_income_ratio: float = 0.3  # Maximum 30% of income
+    min_down_payment_percentage: float = 0.0  # Minimum down payment %
+    max_loan_to_value: float = 0.75  # Maximum LTV (75%)
+    max_urban_renewal_value: float = 400_000  # Maximum urban renewal cap
+    require_positive_cash_flow: bool = False  # Must have positive cash flow
 ```
 
-**Variable Descriptions:**
-- `max_mortgage_to_income_ratio`: Maximum mortgage payment as percentage of income (default 30%)
-- `min_down_payment_percentage`: Minimum down payment required as percentage of property price
-- `max_loan_to_value_ratio`: Maximum loan-to-value ratio allowed
-- `require_positive_cash_flow`: Whether positive cash flow is required
-- `max_additional_costs`: Maximum allowed additional investment costs
+### 3. `LoanMetrics` (Dataclass)
+**Calculated loan-related values**
 
----
+```python
+@dataclass
+class LoanMetrics:
+    """Calculated loan metrics."""
+    
+    loan_amount: float  # גודל המשכנתא
+    leverage_ratio: float  # שיעור המינוף
+    equity_ratio: float  # שיעור ההון העצמי
+    leverage_multiplier: float  # מכפיל המינוף
+    monthly_payment: float  # החזר חודשי
+    total_payments: float  # סך תשלומי המשכנתא
+    total_interest: float  # סך החזרי הריבית
+    avg_monthly_interest: float  # ריבית חודשית ממוצעת
+    required_income: float  # הכנסות נדרשות (30% rule)
+```
 
-### 4. `ScenarioCalculator` (Main Class)
-**Purpose:** Main calculator class that performs all calculations
+### 4. `CashFlowMetrics` (Dataclass)
+**Calculated cash flow values**
+
+```python
+@dataclass
+class CashFlowMetrics:
+    """Calculated cash flow metrics."""
+    
+    rental_yield: float  # תשואת השכירות - Annual yield
+    monthly_net_cash_flow: float  # תזרים חודשי נטו
+    monthly_interest_flow: float  # תזרים ריבית חודשי
+    avg_principal_payment: float  # החזר קרן ממוצע
+    leveraged_rental_yield: float  # תשואת שכירות ממונפת
+    net_leveraged_yield: float  # תשואה נטו ממונפת
+```
+
+### 5. `AppreciationMetrics` (Dataclass)
+**Calculated appreciation values**
+
+```python
+@dataclass
+class AppreciationMetrics:
+    """Calculated appreciation metrics."""
+    
+    property_appreciation: float  # עליית ערך הנכס
+    urban_renewal_appreciation: float  # עליית ערך פינוי בינוי
+    total_appreciation: float  # עליית ערך כוללת
+    sale_value: float  # שווי במכירה
+    total_return_rate: float  # שיעור תשואה כולל
+    annualized_return: float  # תשואה שנתית
+    leveraged_return: float  # תשואה ממונפת
+    net_annual_return: float  # תשואה שנתית נטו
+```
+
+### 6. `EarlyRepaymentMetrics` (Dataclass)
+**Early repayment calculations**
+
+```python
+@dataclass
+class EarlyRepaymentMetrics:
+    """Early mortgage repayment metrics."""
+    
+    remaining_mortgage: float  # שארית משכנתא
+    early_repayment_penalty: float  # עמלת פירעון מוקדם
+    total_debt_to_bank: float  # סך חוב לבנק
+    proceeds_minus_debt: float  # תקבול פחות חוב
+    net_gain_property: float  # רווח נטו מהנכס
+```
+
+### 7. `PortfolioMetrics` (Dataclass)
+**Alternative investment portfolio calculations**
+
+```python
+@dataclass
+class PortfolioMetrics:
+    """Alternative investment portfolio metrics."""
+    
+    cash_in_portfolio: float  # כסף בתיק השקעות
+    portfolio_initial_growth: float  # צמיחת סכום ראשוני
+    monthly_deposits: float  # הפקדות חודשיות
+    accumulated_deposits: float  # צבירה מהפקדות
+    total_portfolio_value: float  # שווי תיק כולל
+    portfolio_after_tax: float  # אחרי מס רווח הון
+    net_portfolio_profit: float  # רווח נטו מתיק
+```
+
+### 8. `ScenarioResult` (Dataclass)
+**Complete scenario calculation result**
+
+```python
+@dataclass
+class ScenarioResult:
+    """Complete results from scenario calculation."""
+    
+    inputs: ScenarioInputs
+    loan_metrics: LoanMetrics
+    cash_flow_metrics: CashFlowMetrics
+    appreciation_metrics: AppreciationMetrics
+    early_repayment_metrics: EarlyRepaymentMetrics
+    portfolio_metrics: PortfolioMetrics
+    
+    # Final summary
+    total_value_at_sale: float  # שווי כולל ביום המכירה
+    total_profit: float  # רווח כולל
+    annual_return: float  # תשואה שנתית
+    
+    # Validation
+    is_valid: bool
+    validation_errors: List[str]
+```
+
+### 9. `ScenarioCalculator` (Main Class)
+**Main calculator orchestrating all calculations**
 
 ```python
 class ScenarioCalculator:
-    """Calculates investment scenario metrics."""
+    """Main calculator for investment scenario analysis."""
     
     def __init__(
         self,
-        assumptions: InvestmentAssumptions,
-        user_features: Optional[UserFeatures] = None,
+        inputs: ScenarioInputs,
         restrictions: Optional[InvestmentRestrictions] = None
     ):
-        self.assumptions = assumptions
-        self.user_features = user_features or UserFeatures()
+        self.inputs = inputs
         self.restrictions = restrictions or InvestmentRestrictions()
-        
-        # Calculated values (cached)
-        self._loan_amount: Optional[float] = None
-        self._down_payment_percentage: Optional[float] = None
-        self._leverage_multiplier: Optional[float] = None
-        self._monthly_mortgage_payment: Optional[float] = None
-        self._total_interest_paid: Optional[float] = None
-        self._monthly_cash_flow: Optional[float] = None
-        self._annual_cash_flow: Optional[float] = None
-        self._property_appreciation: Optional[float] = None
-        self._total_return: Optional[float] = None
-        self._annualized_return: Optional[float] = None
-        self._leveraged_return: Optional[float] = None
     
-    # Calculation Methods
-    def calculate_loan_metrics(self) -> Dict[str, float]:
-        """Calculate loan-related metrics."""
-        pass
+    def calculate_loan_metrics(self) -> LoanMetrics:
+        """Calculate all loan-related metrics."""
+        ...
     
-    def calculate_cash_flow(self) -> Dict[str, float]:
+    def calculate_cash_flow(self) -> CashFlowMetrics:
         """Calculate cash flow metrics."""
-        pass
+        ...
     
-    def calculate_returns(self) -> Dict[str, float]:
-        """Calculate return metrics."""
-        pass
+    def calculate_appreciation(self) -> AppreciationMetrics:
+        """Calculate appreciation and return metrics."""
+        ...
     
-    def calculate_all(self) -> Dict[str, Any]:
-        """Calculate all metrics."""
-        pass
+    def calculate_early_repayment(self) -> EarlyRepaymentMetrics:
+        """Calculate early repayment scenarios."""
+        ...
+    
+    def calculate_portfolio(self) -> PortfolioMetrics:
+        """Calculate alternative investment portfolio."""
+        ...
     
     def validate(self) -> Tuple[bool, List[str]]:
-        """Validate assumptions against restrictions."""
-        pass
+        """Validate inputs against restrictions."""
+        ...
+    
+    def calculate(self) -> ScenarioResult:
+        """Run all calculations and return complete result."""
+        ...
 ```
 
 ---
 
-## Calculation Methods
+## Key Financial Formulas
 
-### Loan Calculations
-
+### PMT (Mortgage Payment)
 ```python
-def calculate_loan_amount(self) -> float:
-    """Loan amount = Property price - Down payment."""
-    return self.assumptions.property_price - self.assumptions.down_payment_amount
-
-def calculate_down_payment_percentage(self) -> float:
-    """Down payment as percentage of property price."""
-    return self.assumptions.down_payment_amount / self.assumptions.property_price
-
-def calculate_leverage_multiplier(self) -> float:
-    """Leverage multiplier = 1 / (1 - down_payment_percentage)."""
-    dp_pct = self.calculate_down_payment_percentage()
-    return 1.0 / (1.0 - dp_pct) if dp_pct < 1.0 else 1.0
-
-def calculate_monthly_mortgage_payment(self) -> float:
-    """Monthly mortgage payment using PMT formula."""
-    # PMT(rate/12, 12*years, loan_amount)
-    monthly_rate = self.assumptions.interest_rate_annual / 12
-    num_payments = self.assumptions.loan_term_years * 12
-    loan_amount = self.calculate_loan_amount()
-    
-    if monthly_rate == 0:
-        return loan_amount / num_payments
-    
-    return loan_amount * (monthly_rate * (1 + monthly_rate)**num_payments) / \
-           ((1 + monthly_rate)**num_payments - 1)
+def calculate_pmt(rate: float, nper: int, pv: float) -> float:
+    """Calculate monthly payment (Excel PMT function)."""
+    if rate == 0:
+        return pv / nper
+    monthly_rate = rate / 12
+    return pv * (monthly_rate * (1 + monthly_rate)**nper) / ((1 + monthly_rate)**nper - 1)
 ```
 
-### Cash Flow Calculations
-
+### FV (Future Value)
 ```python
-def calculate_monthly_cash_flow(self) -> float:
-    """Monthly cash flow = Rental income - Mortgage payment."""
-    return self.assumptions.monthly_rental_income - self.calculate_monthly_mortgage_payment()
-
-def calculate_annual_cash_flow(self) -> float:
-    """Annual cash flow = Monthly cash flow * 12."""
-    return self.calculate_monthly_cash_flow() * 12
-
-def calculate_rental_yield(self) -> float:
-    """Annual rental yield = (Monthly rent * 12) / Property price."""
-    return (self.assumptions.monthly_rental_income * 12) / self.assumptions.property_price
+def calculate_fv(rate: float, nper: int, pmt: float, pv: float = 0) -> float:
+    """Calculate future value (Excel FV function)."""
+    if rate == 0:
+        return -(pv + pmt * nper)
+    return -(pv * (1 + rate)**nper + pmt * ((1 + rate)**nper - 1) / rate)
 ```
 
-### Return Calculations
-
+### PV (Present Value)
 ```python
-def calculate_property_appreciation(self) -> float:
-    """Property appreciation over loan term."""
-    rate = self.assumptions.annual_appreciation_rate
-    years = self.assumptions.loan_term_years
-    return self.assumptions.property_price * (((1 + rate) ** years) - 1)
+def calculate_pv(rate: float, nper: int, pmt: float) -> float:
+    """Calculate present value (Excel PV function)."""
+    if rate == 0:
+        return -pmt * nper
+    return -pmt * (1 - (1 + rate)**(-nper)) / rate
+```
 
-def calculate_additional_costs_appreciation(self) -> float:
-    """Additional costs appreciation over loan term."""
-    rate = self.assumptions.annual_appreciation_rate
-    years = self.assumptions.loan_term_years
-    costs = min(self.assumptions.additional_investment_costs, 
-                self.restrictions.max_additional_costs)
-    return costs * (((1 + rate) ** years) - 1)
-
-def calculate_total_property_value(self) -> float:
-    """Total property value at end of term."""
-    return (self.assumptions.property_price + 
-            self.calculate_property_appreciation() + 
-            self.calculate_additional_costs_appreciation())
-
-def calculate_total_return(self) -> float:
-    """Total return = (Final value / Initial investment) - 1."""
-    initial_investment = (self.assumptions.down_payment_amount + 
-                         self.assumptions.additional_purchase_costs +
-                         min(self.assumptions.additional_investment_costs,
-                             self.restrictions.max_additional_costs))
-    final_value = self.calculate_total_property_value()
-    return (final_value / initial_investment) - 1 if initial_investment > 0 else 0
-
-def calculate_annualized_return(self) -> float:
-    """Annualized return = ((1 + total_return)^(1/years)) - 1."""
-    total_return = self.calculate_total_return()
-    years = self.assumptions.loan_term_years
-    return ((1 + total_return) ** (1 / years)) - 1
-
-def calculate_leveraged_return(self) -> float:
-    """Leveraged return = Annualized return * Leverage multiplier."""
-    return self.calculate_annualized_return() * self.calculate_leverage_multiplier()
+### Compound Growth
+```python
+def calculate_compound_growth(principal: float, rate: float, years: float) -> float:
+    """Calculate compound growth: principal * ((1 + rate)^years - 1)."""
+    return principal * (((1 + rate) ** years) - 1)
 ```
 
 ---
 
-## Validation Logic
+## Logic Issues / Improvements Identified
 
-```python
-def validate(self) -> Tuple[bool, List[str]]:
-    """Validate assumptions against restrictions and user features."""
-    errors = []
-    
-    # Check down payment percentage
-    dp_pct = self.calculate_down_payment_percentage()
-    if dp_pct < self.restrictions.min_down_payment_percentage:
-        errors.append(f"Down payment {dp_pct:.1%} below minimum {self.restrictions.min_down_payment_percentage:.1%}")
-    
-    # Check loan-to-value ratio
-    ltv = 1 - dp_pct
-    if ltv > self.restrictions.max_loan_to_value_ratio:
-        errors.append(f"Loan-to-value {ltv:.1%} exceeds maximum {self.restrictions.max_loan_to_value_ratio:.1%}")
-    
-    # Check mortgage-to-income ratio (if user income provided)
-    if self.user_features.monthly_income:
-        mortgage_payment = self.calculate_monthly_mortgage_payment()
-        ratio = mortgage_payment / self.user_features.monthly_income
-        if ratio > self.restrictions.max_mortgage_to_income_ratio:
-            errors.append(f"Mortgage-to-income {ratio:.1%} exceeds maximum {self.restrictions.max_mortgage_to_income_ratio:.1%}")
-    
-    # Check positive cash flow requirement
-    if self.restrictions.require_positive_cash_flow:
-        cash_flow = self.calculate_monthly_cash_flow()
-        if cash_flow < 0:
-            errors.append(f"Negative cash flow: {cash_flow:.2f}")
-    
-    # Check minimum cash flow
-    cash_flow = self.calculate_monthly_cash_flow()
-    if cash_flow < self.user_features.min_cash_flow:
-        errors.append(f"Cash flow {cash_flow:.2f} below minimum {self.user_features.min_cash_flow:.2f}")
-    
-    return len(errors) == 0, errors
-```
+1. **Urban Renewal Value (Row 27):**
+   - Currently references Regression sheet (hard dependency)
+   - Should be a configurable input with cap at 400,000
+   - Consider making it optional
 
----
+2. **Tax Calculations:**
+   - Capital gains tax (25%) is applied inconsistently
+   - Should have clear rules for when tax applies
+   - Consider adding tax deduction options
 
-## Identified Logic Issues / Improvements Needed
+3. **Required Income (Row 15):**
+   - Uses fixed 30% rule
+   - Should be configurable restriction
+   - Should account for other debts
 
-1. **Missing Operating Expenses:**
+4. **Missing Operating Expenses:**
    - Property taxes
    - Insurance
    - Maintenance (1-2% of property value annually)
-   - Property management fees (if applicable)
-   - Vacancy rate (typically 5-10%)
+   - Property management fees
+   - Vacancy rate (5-10%)
+   - **Recommendation:** Add optional operating expenses input
 
-2. **Tax Considerations:**
-   - Mortgage interest deduction
-   - Property tax deduction
-   - Depreciation
-   - Capital gains tax on sale
+5. **Portfolio vs Real Estate Comparison:**
+   - Excel compares both strategies well
+   - Should output clear comparison metrics
+   - Consider adding: which strategy is better?
 
-3. **Additional Costs Formula:**
-   - Currently references Regression sheet (hard dependency)
-   - Should be configurable or calculated independently
+6. **Early Repayment Penalty:**
+   - Complex PV-based calculation
+   - Should document assumptions clearly
+   - May vary by bank/country
 
-4. **Required Income Calculation:**
-   - Uses fixed 0.3 (30% rule) - should be configurable
-   - Should account for other debts
+7. **Inflation Not Modeled:**
+   - Returns are nominal, not real
+   - Consider adding inflation-adjusted returns
 
-5. **Cash Flow Simplification:**
-   - Only considers rent - mortgage
-   - Should subtract operating expenses
+---
 
-6. **Appreciation Assumption:**
-   - Assumes constant rate
-   - No volatility or market risk consideration
+## File Structure
 
-7. **Interest Rate:**
-   - Fixed rate only
-   - No variable rate option
+```
+analyzer/
+├── __init__.py
+├── models.py          # All dataclasses (ScenarioInputs, Metrics, etc.)
+├── calculator.py      # ScenarioCalculator class
+├── financial.py       # Financial functions (PMT, FV, PV, etc.)
+├── validators.py      # Validation logic
+└── formatters.py      # Output formatting (optional)
+
+tests/
+└── test_analyzer/
+    ├── __init__.py
+    ├── test_models.py
+    ├── test_calculator.py
+    ├── test_financial.py
+    └── test_validators.py
+```
 
 ---
 
 ## Next Steps
 
-1. Implement `InvestmentAssumptions` dataclass
-2. Implement `UserFeatures` dataclass  
-3. Implement `InvestmentRestrictions` dataclass
-4. Implement `ScenarioCalculator` class with calculation methods
-5. Add validation logic
-6. Write unit tests
-7. Consider enhancements (operating expenses, taxes, etc.)
-
+1. [ ] Create `analyzer/models.py` with all dataclasses
+2. [ ] Create `analyzer/financial.py` with PMT, FV, PV functions
+3. [ ] Create `analyzer/calculator.py` with ScenarioCalculator
+4. [ ] Create `analyzer/validators.py` with validation logic
+5. [ ] Write unit tests for each module
+6. [ ] Test with Excel values to verify accuracy

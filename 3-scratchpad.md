@@ -4,24 +4,41 @@
 
 ---
 
-## Phase 2: Scenario Calculator Design
+## Phase 2: Scenario Calculator Design (v2 - Improved)
 
-### Analysis Complete
-- ✅ Identified user inputs (yellow cells)
-- ✅ Translated Hebrew row labels
-- ✅ Analyzed formulas and logic flow
-- ✅ Identified potential logic flaws
+### Full Analysis Complete
+- ✅ Analyzed all 66+ rows in Scenario Calculator sheet
+- ✅ Identified 14 user inputs (yellow cells)
+- ✅ Translated all Hebrew labels to English
+- ✅ Documented all 35+ formulas
+- ✅ Organized into 7 calculation groups
+- ✅ Identified logic issues
 
-### Class Structure Designed
-1. **InvestmentAssumptions** - All scenario parameters
-2. **UserFeatures** - User financial features/constraints
-3. **InvestmentRestrictions** - Validation rules
-4. **ScenarioCalculator** - Main calculation engine
+### Calculation Groups
+1. **Loan Metrics** - loan amount, leverage, monthly payment, interest
+2. **Cash Flow** - rental yield, net cash flow, leveraged yield
+3. **Property Appreciation** - value growth, sale value, returns
+4. **Early Repayment** - remaining mortgage, penalties, net gain
+5. **Portfolio Comparison** - alternative investment calculations
+6. **Post-Mortgage Rental** - rental income after mortgage ends
+7. **Final Summary** - total value, profit, annual return
+
+### Class Structure (Improved)
+1. **ScenarioInputs** - All 14 user inputs
+2. **InvestmentRestrictions** - Validation rules
+3. **LoanMetrics** - Calculated loan values
+4. **CashFlowMetrics** - Calculated cash flow
+5. **AppreciationMetrics** - Returns and appreciation
+6. **EarlyRepaymentMetrics** - Early repayment scenarios
+7. **PortfolioMetrics** - Alternative investment
+8. **ScenarioResult** - Complete results
+9. **ScenarioCalculator** - Main engine
 
 ### Key Findings
-- User inputs: property price, down payment, loan term, interest rate, rental income, appreciation rate
-- Calculations: loan metrics, cash flow, returns (ROI, annualized, leveraged)
-- Missing: operating expenses, taxes, vacancy rate, maintenance costs
+- Excel compares real estate vs portfolio investment
+- Uses PMT, FV, PV financial functions
+- Accounts for leverage, taxes (25% capital gains)
+- Missing: operating expenses, vacancy rate, inflation
 
 **Full design document:** `SCENARIO_CALCULATOR_DESIGN.md`
 
