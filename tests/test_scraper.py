@@ -11,12 +11,12 @@ from pathlib import Path
 from datetime import datetime
 from unittest.mock import Mock, patch, MagicMock
 
-from src.scraper import Yad2Scraper
-from src.config import ScraperConfig
-from src.api_client import Yad2ApiClient
-from src.parser import ListingParser
-from src.exporter import ParquetExporter
-from src.models import Listing
+from scraper.scraper import Yad2Scraper
+from scraper.config import ScraperConfig
+from scraper.api_client import Yad2ApiClient
+from scraper.parser import ListingParser
+from scraper.exporter import ParquetExporter
+from scraper.models import Listing
 
 
 # Sample API response for testing

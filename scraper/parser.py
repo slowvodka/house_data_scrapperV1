@@ -8,7 +8,7 @@ Handles data extraction, type conversion, and missing field handling.
 from datetime import datetime
 from typing import Any, Dict, List, Optional
 
-from src.models import Listing
+from scraper.models import Listing
 
 
 class ListingParser:

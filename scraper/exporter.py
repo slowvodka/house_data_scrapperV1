@@ -14,7 +14,7 @@ import pandas as pd
 import pyarrow as pa
 import pyarrow.parquet as pq
 
-from src.models import Listing
+from scraper.models import Listing
 
 
 # Explicit PyArrow schema for Parquet files

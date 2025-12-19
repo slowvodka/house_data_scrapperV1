@@ -9,7 +9,7 @@ from unittest.mock import Mock, patch
 
 import pytest
 
-from src.cli import (
+from scraper.cli import (
     list_cities_command,
     parse_args,
     scrape_city,
@@ -71,7 +71,7 @@ class TestCLIListCities:
         )
         
         # Mock the mapping file path
-        with patch("src.cli.CITY_TO_NEIGHBORHOODS_FILE", mapping_file):
+        with patch("scraper.cli.CITY_TO_NEIGHBORHOODS_FILE", mapping_file):
             exit_code = list_cities_command()
             assert exit_code == 0
 
@@ -81,7 +81,7 @@ class TestCLIScrapeCommand:
 
     def test_scrape_command_calls_scraper(self):
         """scrape command should call scraping function."""
-        with patch("src.cli.scrape_city") as mock_scrape:
+        with patch("scraper.cli.scrape_city") as mock_scrape:
             mock_scrape.return_value = Path("test.parquet")
             exit_code = scrape_command(["תל אביב יפו"], verbose=False)
             mock_scrape.assert_called_once_with("תל אביב יפו", verbose=False)
@@ -89,7 +89,7 @@ class TestCLIScrapeCommand:
 
     def test_scrape_command_handles_multiple_cities(self):
         """scrape command should handle multiple cities."""
-        with patch("src.cli.scrape_city") as mock_scrape:
+        with patch("scraper.cli.scrape_city") as mock_scrape:
             mock_scrape.return_value = Path("test.parquet")
             exit_code = scrape_command(["תל אביב יפו", "רמת גן"], verbose=False)
             assert mock_scrape.call_count == 2
@@ -97,7 +97,7 @@ class TestCLIScrapeCommand:
 
     def test_scrape_command_handles_invalid_city(self):
         """scrape command should handle invalid city gracefully."""
-        with patch("src.cli.scrape_city") as mock_scrape:
+        with patch("scraper.cli.scrape_city") as mock_scrape:
             mock_scrape.return_value = None
             exit_code = scrape_command(["Invalid City"], verbose=False)
             assert exit_code == 1  # Error exit code

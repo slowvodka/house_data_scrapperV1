@@ -8,8 +8,8 @@ Parses Yad2 API JSON responses into Listing dataclass objects.
 import pytest
 from datetime import datetime
 
-from src.parser import ListingParser
-from src.models import Listing
+from scraper.parser import ListingParser
+from scraper.models import Listing
 
 
 # Sample API response data based on discovered API structure

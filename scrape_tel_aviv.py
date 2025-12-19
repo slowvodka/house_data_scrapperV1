@@ -2,10 +2,10 @@
 import time
 from datetime import datetime
 from pathlib import Path
-from src.api_client import Yad2ApiClient
-from src.config import ScraperConfig
-from src.parser import ListingParser
-from src.exporter import ParquetExporter
+from scraper.api_client import Yad2ApiClient
+from scraper.config import ScraperConfig
+from scraper.parser import ListingParser
+from scraper.exporter import ParquetExporter
 
 # Scraping parameters
 CITY = "תל אביב"

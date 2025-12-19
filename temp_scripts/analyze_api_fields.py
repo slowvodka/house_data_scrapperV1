@@ -6,9 +6,9 @@ Queries a sample Tel Aviv listing and shows:
 3. Fields we're missing
 """
 import json
-from src.api_client import Yad2ApiClient
-from src.config import ScraperConfig
-from src.parser import ListingParser
+from scraper.api_client import Yad2ApiClient
+from scraper.config import ScraperConfig
+from scraper.parser import ListingParser
 
 config = ScraperConfig()
 client = Yad2ApiClient(config)

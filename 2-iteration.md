@@ -24,7 +24,7 @@
 ### Project Structure
 ```
 house_data_scrapper/
-├── src/                    # Core modules (all complete)
+├── scraper/                # House data scraper module (all complete)
 ├── data/
 │   ├── mappings/           # JSON mapping files
 │   │   ├── city_to_neighborhoods.json
@@ -57,7 +57,7 @@ house_data_scrapper/
 ### Plan
 
 #### Phase 1: CLI Development ✅ COMPLETE
-- [x] Create `src/cli.py` module ✅
+- [x] Create `scraper/cli.py` module ✅
 - [x] Implement `scrape_city()` function ✅
 - [x] Add English-to-Hebrew name conversion ✅
 - [x] Add command-line argument parsing (argparse) ✅

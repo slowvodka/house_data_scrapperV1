@@ -94,7 +94,7 @@
 - `list_cities_command()`: List all available cities from mappings
 - `parse_args()`: Parse command-line arguments with argparse
 - `main()`: CLI entry point
-- **Usage:** `python -m src.cli scrape "תל אביב יפו"` or `python -m src.cli list-cities`
+- **Usage:** `python -m scraper.cli scrape "tel aviv"` or `python -m scraper.cli list-cities`
 - **Features:** Multiple cities, --verbose flag, --output flag, error handling
 
 ---

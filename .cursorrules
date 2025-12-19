@@ -126,7 +126,7 @@ responses           # Mock HTTP requests in tests
 ## 7. Project Structure (Target)
 ```
 house_data_scrapper/
-├── src/
+├── scraper/
 │   ├── __init__.py
 │   ├── config.py           # Configuration management
 │   ├── models.py           # Listing dataclass
@@ -134,6 +134,7 @@ house_data_scrapper/
 │   ├── parser.py           # JSON parsing & data extraction
 │   ├── exporter.py         # Parquet export functionality
 │   ├── scraper.py          # Main orchestration logic
+│   ├── cli.py              # Command-line interface
 │   └── browser.py          # Playwright browser (fallback)
 ├── tests/
 │   ├── __init__.py
@@ -178,7 +179,7 @@ Need to check/test something quickly?
 ```
 
 ### What Goes Where:
-- **`src/`**: Production code modules
+- **`scraper/`**: Production code modules (house data scraper)
 - **`tests/`**: Test files
 - **`temp_scripts/`**: Temporary analysis/check scripts (deleted on cleanup)
 - **Root**: Only core project files (scrapers, configs, docs)

@@ -5,7 +5,7 @@ TDD Phase: RED - Writing tests before implementation.
 """
 
 import pytest
-from src.config import ScraperConfig, CITY_ID_MAP
+from scraper.config import ScraperConfig, CITY_ID_MAP
 
 
 class TestScraperConfigDefaults:

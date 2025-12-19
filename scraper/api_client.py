@@ -13,7 +13,7 @@ import requests
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
 
-from src.config import ScraperConfig
+from scraper.config import ScraperConfig
 
 
 # Map API endpoint for full listing coverage

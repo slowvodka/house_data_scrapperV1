@@ -12,8 +12,8 @@ from pathlib import Path
 import pandas as pd
 import pytest
 
-from src.exporter import ParquetExporter
-from src.models import Listing
+from scraper.exporter import ParquetExporter
+from scraper.models import Listing
 
 
 @pytest.fixture

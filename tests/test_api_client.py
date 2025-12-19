@@ -9,8 +9,8 @@ import pytest
 import responses
 from requests.exceptions import RequestException, Timeout
 
-from src.api_client import Yad2ApiClient
-from src.config import ScraperConfig
+from scraper.api_client import Yad2ApiClient
+from scraper.config import ScraperConfig
 
 
 class TestApiClientInitialization:
@@ -213,7 +213,7 @@ class TestMapApiEndpoint:
 
     def test_map_api_url_constant_exists(self):
         """MAP_API_URL constant should be defined."""
-        from src.api_client import MAP_API_URL
+        from scraper.api_client import MAP_API_URL
         assert "realestate-feed/forsale/map" in MAP_API_URL
 
     def test_build_map_url_with_bbox(self):
@@ -227,7 +227,7 @@ class TestMapApiEndpoint:
 
     def test_build_map_url_uses_map_api(self):
         """Map URL should use the map API endpoint, not recommendations."""
-        from src.api_client import MAP_API_URL
+        from scraper.api_client import MAP_API_URL
         config = ScraperConfig()
         client = Yad2ApiClient(config)
         url = client.build_map_url(bbox="31.7,34.4,33.1,35.6", zoom=8)
@@ -237,7 +237,7 @@ class TestMapApiEndpoint:
     @responses.activate
     def test_fetch_map_listings_returns_markers(self):
         """fetch_map_listings should return marker data."""
-        from src.api_client import MAP_API_URL
+        from scraper.api_client import MAP_API_URL
         config = ScraperConfig()
         client = Yad2ApiClient(config)
         
@@ -262,7 +262,7 @@ class TestMapApiEndpoint:
     @responses.activate
     def test_fetch_map_listings_handles_empty(self):
         """fetch_map_listings should handle empty markers."""
-        from src.api_client import MAP_API_URL
+        from scraper.api_client import MAP_API_URL
         config = ScraperConfig()
         client = Yad2ApiClient(config)
         
@@ -278,7 +278,7 @@ class TestMapApiEndpoint:
 
     def test_israel_bbox_constant_exists(self):
         """ISRAEL_BBOX constant should be defined for full coverage."""
-        from src.api_client import ISRAEL_BBOX
+        from scraper.api_client import ISRAEL_BBOX
         # Should cover lat ~29.5-33.3, lon ~34.2-35.9
         assert "29" in ISRAEL_BBOX or "30" in ISRAEL_BBOX  # Southern Israel
         assert "35" in ISRAEL_BBOX  # Eastern border

@@ -10,10 +10,10 @@ import sys
 from pathlib import Path
 from typing import List, Optional
 
-from src.api_client import Yad2ApiClient
-from src.config import ScraperConfig
-from src.exporter import ParquetExporter
-from src.parser import ListingParser
+from scraper.api_client import Yad2ApiClient
+from scraper.config import ScraperConfig
+from scraper.exporter import ParquetExporter
+from scraper.parser import ListingParser
 
 # Path to mappings directory
 MAPPINGS_DIR = Path(__file__).parent.parent / "data" / "mappings"

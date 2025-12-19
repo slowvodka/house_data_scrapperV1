@@ -10,11 +10,11 @@ from datetime import datetime
 from pathlib import Path
 from typing import List, Optional
 
-from src.api_client import Yad2ApiClient
-from src.config import ScraperConfig
-from src.exporter import ParquetExporter
-from src.models import Listing
-from src.parser import ListingParser
+from scraper.api_client import Yad2ApiClient
+from scraper.config import ScraperConfig
+from scraper.exporter import ParquetExporter
+from scraper.models import Listing
+from scraper.parser import ListingParser
 
 
 class Yad2Scraper:
