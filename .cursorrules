@@ -136,7 +136,7 @@ house_data_scrapper/
 │   ├── scraper.py          # Main orchestration logic
 │   ├── cli.py              # Command-line interface
 │   └── browser.py          # Playwright browser (fallback)
-├── analyzer/               # Phase 4-5: Investment analysis (NEXT)
+├── analyzer/               # Phase 2-3: Investment analysis (NEXT)
 │   ├── __init__.py
 │   ├── scenarios.py        # Scenario calculator
 │   ├── timeline.py         # Timeline projection

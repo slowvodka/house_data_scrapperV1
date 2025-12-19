@@ -2,14 +2,13 @@
 
 ## 🎯 Next Phase: Investment Analysis Modules
 
-**Focus:** Phase 4 (Scenario Calculator) and Phase 5 (Timeline Projection)
+**Focus:** Phase 2 (Scenario Calculator) and Phase 3 (Timeline Projection)
 
 ### Phase Status Overview
 - ✅ **Phase 1: Scraping Engine** - COMPLETE (112 tests passing)
-- 🔜 **Phase 2: Price Prediction** - DEFERRED (future work)
-- 🔜 **Phase 3: Investment Scoring** - DEFERRED (future work)
-- 🎯 **Phase 4: Scenario Calculator** - NEXT (starting now)
-- 🎯 **Phase 5: Timeline Projection** - NEXT (after Phase 4)
+- 🎯 **Phase 2: Scenario Calculator** - NEXT (starting now)
+- 🎯 **Phase 3: Timeline Projection** - NEXT (after Phase 2)
+- 🔜 **Future: Price Prediction & Scoring** - DEFERRED (future work)
 
 ### Current State
 - **Scraping Engine:** ✅ Complete and tested
@@ -33,7 +32,7 @@ house_data_scrapper/
 
 ---
 
-## 🎯 Next Session: Phase 4 - Scenario Calculator
+## 🎯 Next Session: Phase 2 - Scenario Calculator
 
 **Goal:** Build investment scenario calculator based on Excel logic
 
@@ -61,7 +60,7 @@ house_data_scrapper/
 
 ### Plan
 
-#### Phase 4: Scenario Calculator
+#### Phase 2: Scenario Calculator
 - [ ] Create `analyzer/` module structure
 - [ ] Design data models for scenarios
 - [ ] Implement mortgage payment calculator
@@ -73,7 +72,7 @@ house_data_scrapper/
 - [ ] Write unit tests
 - [ ] Create CLI interface for scenario analysis
 
-#### Phase 5: Timeline Projection (After Phase 4)
+#### Phase 3: Timeline Projection (After Phase 2)
 - [ ] Design timeline data structure
 - [ ] Implement monthly cash flow projection
 - [ ] Implement cumulative return calculations

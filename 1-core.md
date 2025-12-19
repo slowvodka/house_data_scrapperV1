@@ -8,9 +8,9 @@
 3. Projects long-term investment performance
 
 **Phase 1 (Complete):** Scraping engine - Extract comprehensive real estate data  
-**Phase 4 (Next):** Scenario Calculator - Model investment scenarios with ROI, cash flow, NPV, IRR  
-**Phase 5 (Next):** Timeline Projection - Project cash flows and returns over time  
-**Phase 2-3 (Future):** Price prediction model and investment scoring system
+**Phase 2 (Next):** Scenario Calculator - Model investment scenarios with ROI, cash flow, NPV, IRR  
+**Phase 3 (Next):** Timeline Projection - Project cash flows and returns over time  
+**Future:** Price prediction model and investment scoring system (deferred)
 
 **Input:** List of cities (English or Hebrew)  
 **Output:** 
@@ -56,25 +56,19 @@
 
 **Total: 112 tests passing** (100 + 12 CLI tests)
 
-### Phase 2: Price Prediction Model 🔜 FUTURE
-- Train regression model on historical data
-- Predict property prices based on features
-- Compare predicted vs actual prices
-
-### Phase 3: Investment Scoring System 🔜 FUTURE
-- Calculate multiple ranking metrics
-- Combine into composite score
-- Rank properties by investment potential
-
-### Phase 4: Scenario Calculator 🎯 NEXT
+### Phase 2: Scenario Calculator 🎯 NEXT
 - Model different investment scenarios (A, B, C)
 - Calculate ROI, cash flow, NPV, IRR
 - Compare financing options
 
-### Phase 5: Timeline Projection 🎯 NEXT
+### Phase 3: Timeline Projection 🎯 NEXT
 - Project cash flows over time
 - Calculate cumulative returns
 - Visualize investment performance
+
+### Future: Price Prediction & Scoring 🔜 DEFERRED
+- Price prediction model (regression)
+- Investment scoring system (ranking metrics)
 
 ---
 
@@ -269,3 +263,36 @@ Must call `init_session()` first to get cookies from main site, otherwise API re
 - `metaData.coverImage` - Cover image URL (we extract full `images` array instead)
 - `orderId` - Order ID
 - `categoryId`, `subcategoryId` - Category IDs
+
+---
+
+## Phase 2-3: Investment Analysis Modules (Planned)
+
+### Phase 2: Scenario Calculator
+**Purpose:** Model different investment scenarios and calculate financial metrics
+
+**Key Features:**
+- Multiple scenario modeling (Conservative, Moderate, Aggressive)
+- ROI calculations
+- Cash flow projections
+- NPV (Net Present Value) calculations
+- IRR (Internal Rate of Return) calculations
+- Financing option comparisons
+
+**Input:** Property data from Phase 1 (scraped listings)
+**Output:** Scenario comparison reports with financial metrics
+
+### Phase 3: Timeline Projection
+**Purpose:** Project investment performance over time
+
+**Key Features:**
+- Monthly/yearly cash flow projections
+- Cumulative return calculations
+- Property value appreciation modeling
+- Loan paydown tracking
+- Net equity growth over time
+
+**Input:** Property data + scenario parameters
+**Output:** Time-based financial projections and visualizations
+
+**Reference:** See `EXCEL_ANALYSIS.md` for detailed Excel logic breakdown

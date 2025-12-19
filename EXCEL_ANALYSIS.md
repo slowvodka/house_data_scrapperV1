@@ -204,30 +204,25 @@ Timeline (Project Long-term Performance)
 
 Based on this Excel file, the next phases should implement:
 
-### Phase 1: **Data Processing Engine**
+### Phase 1: **Data Processing Engine** ✅ COMPLETE
 - Ingest scraped apartment data
 - Calculate derived metrics (price per sqm, yield, etc.)
 - Normalize and clean data
+- **Status:** Already implemented in scraper module
 
-### Phase 2: **Price Prediction Model**
-- Train regression model on historical data
-- Predict property prices based on features
-- Compare predicted vs actual prices
-
-### Phase 3: **Investment Scoring System**
-- Calculate multiple ranking metrics
-- Combine into composite score
-- Rank properties by investment potential
-
-### Phase 4: **Scenario Calculator**
+### Phase 2: **Scenario Calculator** 🎯 NEXT
 - Model different investment scenarios
 - Calculate ROI, cash flow, NPV, IRR
 - Compare financing options
 
-### Phase 5: **Timeline Projection**
+### Phase 3: **Timeline Projection** 🎯 NEXT
 - Project cash flows over time
 - Calculate cumulative returns
 - Visualize investment performance
+
+### Future: **Price Prediction & Scoring** 🔜 DEFERRED
+- Price prediction model (regression)
+- Investment scoring system (ranking metrics)
 
 ---
 
