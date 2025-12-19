@@ -60,9 +60,11 @@ You are prohibited from writing production code without a failing test.
 - **`1-core.md` is sacred** - only update when a phase/feature is fully complete and tested
 
 ### 🔴 CRITICAL: Phase Approval
-- **Only the USER can approve** marking a phase as "Done" (✅)
-- Agent must **ask for user confirmation** before changing status from "In Progress" to "Done"
-- Never auto-complete phases without explicit user approval
+- **ONLY THE USER CAN APPROVE** marking a phase as "Done" (✅)
+- **AGENT MUST ASK FOR USER CONFIRMATION** before changing status from "In Progress" to "Done"
+- **NEVER AUTO-COMPLETE PHASES WITHOUT EXPLICIT USER APPROVAL**
+- **VIOLATION OF THIS RULE IS A SERIOUS ERROR**
+- Agent may mark phases as "In Progress" but completion requires user sign-off
 
 ## 4b. Git Commit Discipline 🔴 CRITICAL
 **Commit frequently to create rollback points and track progress.**

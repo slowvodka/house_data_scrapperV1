@@ -7,9 +7,9 @@
 2. Calculates investment scenarios and ROI projections
 3. Projects long-term investment performance
 
-**Phase 1 (Complete):** Scraping engine - Extract comprehensive real estate data  
-**Phase 2 (Next):** Scenario Calculator - Model investment scenarios with ROI, cash flow, NPV, IRR  
-**Phase 3 (Next):** Timeline Projection - Project cash flows and returns over time  
+**Phase 1 (Complete):** Scraping engine - Extract comprehensive real estate data
+**Phase 2 (In Progress):** Scenario Calculator - Model investment scenarios with ROI, cash flow, NPV, IRR
+**Phase 3 (Next):** Timeline Projection - Project cash flows and returns over time
 **Future:** Price prediction model and investment scoring system (deferred)
 
 **Input:** List of cities (English or Hebrew)  
@@ -56,15 +56,40 @@
 
 **Total: 112 tests passing** (100 + 12 CLI tests)
 
-### Phase 2: Scenario Calculator 🎯 NEXT
+### Phase 2: Scenario Calculator 🎯 IN PROGRESS (Awaiting User Approval)
+
+**Status:** Implementation Complete - Awaiting User Approval for Phase Completion
+
+| Module | File | Tests | Status |
+|--------|------|-------|--------|
+| Models | `mortgage_return_scenario_calculator/models.py` | 25 | ✅ Done |
+| Calculator | `mortgage_return_scenario_calculator/calculator.py` | 19 | ✅ Done |
+| Financial | `mortgage_return_scenario_calculator/financial.py` | 24 | ✅ Done |
+| Config | `mortgage_return_scenario_calculator/config_generator.py` | - | ✅ Done |
+| Exporter | `mortgage_return_scenario_calculator/exporter.py` | - | ✅ Done |
+
+**Total: 68 tests passing**
+
+**Features Implemented:**
+- Full investment scenario modeling (mortgage, cash flow, appreciation)
+- Real estate vs. portfolio investment comparison
+- Validation rules (income ratios, loan-to-value limits)
+- CSV export with all variables and descriptions
+- Uses numpy-financial for accurate Excel-compatible calculations
+
+**Input:** Property details, income, investment assumptions
+**Output:** Complete investment analysis with ROI, NPV, IRR, scenario comparison
+
+**⚠️ IMPORTANT:** Phase completion requires explicit user approval only.
 - Model different investment scenarios (A, B, C)
 - Calculate ROI, cash flow, NPV, IRR
 - Compare financing options
 
-### Phase 3: Timeline Projection 🎯 NEXT
+### Phase 3: Timeline Projection ⏸️ WAITING
 - Project cash flows over time
 - Calculate cumulative returns
 - Visualize investment performance
+- **Waiting for Phase 2 completion approval**
 
 ### Future: Price Prediction & Scoring 🔜 DEFERRED
 - Price prediction model (regression)
@@ -266,7 +291,7 @@ Must call `init_session()` first to get cookies from main site, otherwise API re
 
 ---
 
-## Phase 2-3: Investment Analysis Modules (Planned)
+## Phase 2-3: Investment Analysis Modules (In Progress)
 
 ### Phase 2: Scenario Calculator
 **Purpose:** Model different investment scenarios and calculate financial metrics

@@ -1,14 +1,16 @@
 # 🔄 Current Iteration
 
-## 🎯 Next Phase: Investment Analysis Modules
+## 🎯 Current Phase: Phase 2 - Scenario Calculator
 
-**Focus:** Phase 2 (Scenario Calculator) and Phase 3 (Timeline Projection)
+**Status:** IN PROGRESS - Awaiting User Approval for Completion
 
 ### Phase Status Overview
 - ✅ **Phase 1: Scraping Engine** - COMPLETE (112 tests passing)
-- 🎯 **Phase 2: Scenario Calculator** - NEXT (starting now)
-- 🎯 **Phase 3: Timeline Projection** - NEXT (after Phase 2)
+- 🎯 **Phase 2: Scenario Calculator** - IN PROGRESS (68 tests passing)
+- ⏸️ **Phase 3: Timeline Projection** - WAITING (after Phase 2 approval)
 - 🔜 **Future: Price Prediction & Scoring** - DEFERRED (future work)
+
+**⚠️ IMPORTANT:** Phase completion requires explicit user approval only.
 
 ### Current State
 - **Scraping Engine:** ✅ Complete and tested
@@ -32,66 +34,41 @@ house_data_scrapper/
 
 ---
 
-## 🎯 Next Session: Phase 2 - Scenario Calculator
+## 🎯 Next Session: Enhancements of Scenario Calculator
 
-**Goal:** Build investment scenario calculator based on Excel logic
+**Goal:** Address pending enhancements
 
-### Requirements Analysis (From Excel)
-1. **Input Data:**
-   - Property price
-   - Down payment percentage
-   - Loan terms (interest rate, duration)
-   - Expected rental income
-   - Operating expenses
+### Current State
+- ✅ **Scenario Calculator:** Complete with full investment modeling (awaiting approval)
+- 🎯 **Next:** Address enhancement items from scratchpad
 
-2. **Scenarios:**
-   - Scenario A (Conservative)
-   - Scenario B (Moderate)
-   - Scenario C (Aggressive)
-   - Each with different assumptions (down payment %, interest rate, etc.)
+### Enhancement Items (Must Address Next Session):
+1. **🏠 First vs Additional House Logic:**
+   - Add input to specify if this is first house or additional property
+   - Different tax implications and loan restrictions for additional properties
 
-3. **Calculations:**
-   - Monthly mortgage payment
-   - Monthly cash flow (rent - expenses - mortgage)
-   - Annual cash flow
-   - ROI (Return on Investment)
-   - NPV (Net Present Value)
-   - IRR (Internal Rate of Return)
+2. **💰 Real Estate Taxes:**
+   - `real_estate_sell_tax_rate` - Capital gains tax when selling property
+   - `real_estate_purchase_tax_rate` - Acquisition tax when buying property
+   - Different rates for different property values and first vs additional homes
 
-### Plan
+3. **📊 Data Separation:**
+   - Separate scraper data from scenario calculator data
+   - Clear distinction between scraped listing data and calculated investment metrics
 
-#### Phase 2: Scenario Calculator
-- [ ] Create `analyzer/` module structure
-- [ ] Design data models for scenarios
-- [ ] Implement mortgage payment calculator
-- [ ] Implement cash flow calculator
-- [ ] Implement ROI calculator
-- [ ] Implement NPV calculator
-- [ ] Implement IRR calculator
-- [ ] Create scenario comparison engine
-- [ ] Write unit tests
-- [ ] Create CLI interface for scenario analysis
+4. **📈 Phase 3: Timeline Projection:**
+   - Begin planning monthly cash flow and return projections
+   - Design timeline data structure
+   - Define scope and requirements
 
-#### Phase 3: Timeline Projection (After Phase 2)
-- [ ] Design timeline data structure
-- [ ] Implement monthly cash flow projection
-- [ ] Implement cumulative return calculations
-- [ ] Implement property appreciation modeling
-- [ ] Implement loan paydown tracking
-- [ ] Create visualization/export functionality
-- [ ] Write unit tests
-
-### Technical Notes
-- Reference: `EXCEL_ANALYSIS.md` for detailed Excel formula breakdown
-- Input: Read from scraped Parquet files (Phase 1 output)
-- Calculations: Replicate Excel formulas, but optimize where possible
-- Output: JSON/CSV reports + potential visualization
+### Approach
+- Address enhancements 1-3 first (they impact current calculator)
+- Then begin detailed planning for Phase 3 Timeline Projection
+- Maintain current Phase 2 status until user approval
 
 ### Success Criteria
-- Can model 3 different investment scenarios
-- Accurately calculates ROI, NPV, IRR
-- Compares scenarios side-by-side
-- Handles edge cases (negative cash flow, etc.)
-- Well-tested with unit tests
+- Enhanced scenario calculator with property type and tax logic
+- Clear data separation between scraper and calculator
+- Detailed plan for Phase 3 Timeline Projection implementation
 
 ---
