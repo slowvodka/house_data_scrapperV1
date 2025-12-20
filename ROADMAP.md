@@ -1,48 +1,10 @@
-# 📘 House Data Scraper & Investment Analysis - Project Core
+# 🗺️ Project Roadmap
 
-## Project Objective
-
-**Goal:** Build a comprehensive real estate investment analysis system that:
-1. Scrapes apartment listings from yad2.co.il
-2. Calculates investment scenarios and ROI projections
-3. Projects long-term investment performance
-
-**Phase 1 (Complete):** Scraping engine - Extract comprehensive real estate data
-**Phase 2 (In Progress):** Scenario Calculator - Model investment scenarios with ROI, cash flow, NPV, IRR
-**Phase 3 (Next):** Timeline Projection - Project cash flows and returns over time
-**Future:** Price prediction model and investment scoring system (deferred)
-
-**Input:** List of cities (English or Hebrew)  
-**Output:** 
-- Phase 1: Parquet files with structured listing data
-- Phase 4-5: Investment analysis reports with scenario comparisons
-**Method:** API requests (primary), Playwright browser automation (fallback)
-
----
-
-## Architecture
-
-```
-┌─────────────────────────────────────────────────────────────┐
-│                    Yad2 Scraper Engine                      │
-├─────────────────────────────────────────────────────────────┤
-│  Config Layer     │  ScraperConfig (cities, delays)         │
-├───────────────────┼─────────────────────────────────────────┤
-│  API Layer        │  Yad2ApiClient (HTTP + session cookies) │
-├───────────────────┼─────────────────────────────────────────┤
-│  Parser Layer     │  ListingParser (JSON → Listing)         │
-├───────────────────┼─────────────────────────────────────────┤
-│  Data Layer       │  ParquetExporter (Listing → .parquet)   │
-├───────────────────┼─────────────────────────────────────────┤
-│  Orchestration    │  Yad2Scraper (coordinates all layers)   │
-└─────────────────────────────────────────────────────────────┘
-```
-
----
-
-## Phase Status
+## Phase Status Overview
 
 ### Phase 1: Scraping Engine ✅ COMPLETE
+
+**Status:** ✅ Complete (112 tests passing)
 
 | Module | File | Tests | Status |
 |--------|------|-------|--------|
@@ -81,30 +43,49 @@
 **Output:** Complete investment analysis with ROI, NPV, IRR, scenario comparison
 
 **⚠️ IMPORTANT:** Phase completion requires explicit user approval only.
-- Model different investment scenarios (A, B, C)
-- Calculate ROI, cash flow, NPV, IRR
-- Compare financing options
 
 ### Phase 3: Timeline Projection ⏸️ WAITING
+
 - Project cash flows over time
 - Calculate cumulative returns
 - Visualize investment performance
 - **Waiting for Phase 2 completion approval**
 
 ### Future: Price Prediction & Scoring 🔜 DEFERRED
+
 - Price prediction model (regression)
 - Investment scoring system (ranking metrics)
 
 ---
 
+## Architecture
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                    Yad2 Scraper Engine                      │
+├─────────────────────────────────────────────────────────────┤
+│  Config Layer     │  ScraperConfig (cities, delays)         │
+├───────────────────┼─────────────────────────────────────────┤
+│  API Layer        │  Yad2ApiClient (HTTP + session cookies) │
+├───────────────────┼─────────────────────────────────────────┤
+│  Parser Layer     │  ListingParser (JSON → Listing)         │
+├───────────────────┼─────────────────────────────────────────┤
+│  Data Layer       │  ParquetExporter (Listing → .parquet)   │
+├───────────────────┼─────────────────────────────────────────┤
+│  Orchestration    │  Yad2Scraper (coordinates all layers)   │
+└─────────────────────────────────────────────────────────────┘
+```
+
+---
+
 ## Module Details
 
-### config.py
+### scraper/config.py
 - `ScraperConfig` dataclass with API URL, delays, timeouts
 - `CITY_DATA`: 20 cities with IDs + bounding boxes
 - `get_city_id()`, `get_city_bbox()`, `get_random_delay()` methods
 
-### models.py
+### scraper/models.py
 - `Listing` dataclass with 25 fields:
   - Required: city, url, scraped_at
   - Property: price, rooms, floor, sqm, sqm_build, address, area, neighborhood, latitude, longitude, asset_type, description, images
@@ -112,20 +93,20 @@
   - Features: parking, balconies, mamad, storage_unit, condition
   - Availability: entrance_date
 
-### api_client.py
+### scraper/api_client.py
 - `Yad2ApiClient` with requests.Session
 - `init_session()`: visits main site for cookies (required!)
 - `fetch_listings(city_id, property_type)`: recommendations API
 - `fetch_map_listings(bbox, zoom)`: map API (grid-based scraping)
 - `PROPERTY_TYPES = [1, 2, 4, 5, 6, 7]` (6 types)
 
-### parser.py
+### scraper/parser.py
 - `ListingParser.parse_listing()`: single JSON → Listing
 - `ListingParser.parse_response()`: recommendations API → List[Listing]
 - `ListingParser.parse_map_response()`: map API → List[Listing]
 - Handles nested JSON, missing fields, Hebrew text
 
-### exporter.py
+### scraper/exporter.py
 - `ParquetExporter.export()`: List[Listing] → .parquet file
 - `ParquetExporter.generate_output_path()`: Generates structured path: `{city_name}/{YYYYMMDD}_{city_name}.parquet`
 - `LISTING_SCHEMA`: explicit PyArrow schema for type safety
@@ -133,13 +114,13 @@
   - Same-day scrapes overwrite the file (one file per city per day)
   - Easy to sort and get most recent file
 
-### scraper.py
+### scraper/scraper.py
 - `Yad2Scraper.create(config)`: factory method (handles cookie init)
 - `scrape_city()`: loops all property types, dedupes by URL
 - `scrape_all_cities()`: loops all config.cities
 - `run()`: full pipeline → Parquet file
 
-### cli.py
+### scraper/cli.py
 - `scrape_city()`: Scrape single city by neighborhoods
 - `scrape_command()`: Execute scrape command for one or more cities
 - `list_cities_command()`: List all available cities from mappings
@@ -192,7 +173,7 @@ Must call `init_session()` first to get cookies from main site, otherwise API re
 | Best result (grid-based) | 11,580 listings (Gush Dan, 25×25 grid) |
 | Tel Aviv neighborhoods discovered | 65 |
 | Cities mapped with neighborhoods | 98 |
-| Tests passing | 100 |
+| Tests passing | 180 (112 Phase 1 + 68 Phase 2) |
 
 ---
 
@@ -240,7 +221,7 @@ Must call `init_session()` first to get cookies from main site, otherwise API re
 - **98 cities** mapped with neighborhoods in `city_to_neighborhoods.json`
 
 **Files:**
-- `scrape_city_by_neighborhoods.py` - Final neighborhood scraper script
+- `temp_scripts/scrape_city_by_neighborhoods.py` - Final neighborhood scraper script (reference)
 - `data/mappings/city_to_neighborhoods.json` - Complete city-to-neighborhood mapping
 - `data/mappings/neighborhood_details.json` - Detailed neighborhood metadata
 
@@ -291,7 +272,7 @@ Must call `init_session()` first to get cookies from main site, otherwise API re
 
 ---
 
-## Phase 2-3: Investment Analysis Modules (In Progress)
+## Phase 2-3: Investment Analysis Modules
 
 ### Phase 2: Scenario Calculator
 **Purpose:** Model different investment scenarios and calculate financial metrics
@@ -321,3 +302,4 @@ Must call `init_session()` first to get cookies from main site, otherwise API re
 **Output:** Time-based financial projections and visualizations
 
 **Reference:** See `EXCEL_ANALYSIS.md` for detailed Excel logic breakdown
+
