@@ -8,7 +8,7 @@
 
 ### Phase Status Overview
 - ✅ **Phase 1: Scraping Engine** - COMPLETE (112 tests passing)
-- 🎯 **Phase 2: Scenario Calculator** - IN PROGRESS (68 tests passing)
+- 🎯 **Phase 2: Scenario Calculator** - IN PROGRESS (117 tests passing)
 - ⏸️ **Phase 3: Timeline Projection** - WAITING (after Phase 2 approval)
 - 🔜 **Future: Price Prediction & Scoring** - DEFERRED (future work)
 
