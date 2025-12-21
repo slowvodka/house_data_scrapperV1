@@ -15,6 +15,7 @@ from mortgage_return_scenario_calculator.models import (
     AppreciationMetrics,
     EarlyRepaymentMetrics,
     PortfolioMetrics,
+    TaxMetrics,
     ScenarioResult,
 )
 from mortgage_return_scenario_calculator.financial import (
@@ -24,6 +25,11 @@ from mortgage_return_scenario_calculator.financial import (
     calculate_compound_growth,
     calculate_compound_value,
     calculate_annualized_return,
+)
+from mortgage_return_scenario_calculator.tax_config import (
+    calculate_purchase_tax,
+    calculate_purchase_tax_rate,
+    calculate_capital_gains_tax,
 )
 
 
@@ -293,6 +299,66 @@ class ScenarioCalculator:
             net_gain_property=net_gain_property,
         )
     
+    def calculate_taxes(
+        self,
+        appreciation_metrics: AppreciationMetrics,
+        early_repayment_metrics: EarlyRepaymentMetrics
+    ) -> TaxMetrics:
+        """Calculate all tax-related metrics.
+        
+        Purchase tax (מס רכישה) is paid at the beginning when buying the property.
+        Capital gains tax (מס שבח) is paid at the end when selling the property.
+        
+        Args:
+            appreciation_metrics: Calculated appreciation metrics.
+            early_repayment_metrics: Calculated early repayment metrics.
+        
+        Returns:
+            TaxMetrics with all tax calculations.
+        """
+        # Purchase tax - paid at the beginning (when buying)
+        purchase_tax = calculate_purchase_tax(
+            property_value=self.inputs.property_price,
+            is_first_house=self.inputs.is_first_house
+        )
+        purchase_tax_rate = calculate_purchase_tax_rate(
+            property_value=self.inputs.property_price,
+            is_first_house=self.inputs.is_first_house
+        )
+        
+        # Capital gains tax - paid at the end (when selling)
+        sale_value = appreciation_metrics.sale_value
+        capital_gains = (
+            sale_value -
+            self.inputs.property_price -
+            purchase_tax -
+            self.inputs.improvement_costs
+        )
+        
+        capital_gains_tax = calculate_capital_gains_tax(
+            sale_price=sale_value,
+            purchase_price=self.inputs.property_price,
+            purchase_tax_paid=purchase_tax,
+            improvement_costs=self.inputs.improvement_costs
+        )
+        
+        # Total taxes
+        total_taxes = purchase_tax + capital_gains_tax
+        
+        # Net profit after taxes
+        # Property profit = proceeds minus debt minus down payment
+        property_profit_before_tax = early_repayment_metrics.net_gain_property
+        property_profit_after_tax = property_profit_before_tax - total_taxes
+        
+        return TaxMetrics(
+            purchase_tax=purchase_tax,
+            purchase_tax_rate=purchase_tax_rate,
+            capital_gains=capital_gains,
+            capital_gains_tax=capital_gains_tax,
+            total_taxes=total_taxes,
+            net_profit_after_taxes=property_profit_after_tax,
+        )
+    
     def calculate_portfolio(self, cash_flow_metrics: CashFlowMetrics) -> PortfolioMetrics:
         """Calculate alternative investment portfolio metrics.
         
@@ -418,19 +484,30 @@ class ScenarioCalculator:
         early_repayment_metrics = self.calculate_early_repayment(loan_metrics, appreciation_metrics)
         portfolio_metrics = self.calculate_portfolio(cash_flow_metrics)
         
+        # Calculate taxes (purchase tax at beginning, capital gains tax at end)
+        tax_metrics = self.calculate_taxes(appreciation_metrics, early_repayment_metrics)
+        
         # Validate
         is_valid, validation_errors = self.validate()
         
         # Calculate final summary values
-        # Total value = property proceeds + portfolio value (after tax)
+        # Total value = property proceeds (after capital gains tax) + portfolio value (after tax)
+        # Note: Purchase tax is already accounted for in net_gain_property calculation
+        # Capital gains tax reduces the proceeds from sale
+        property_proceeds_after_tax = (
+            early_repayment_metrics.proceeds_minus_debt -
+            tax_metrics.capital_gains_tax
+        )
+        
         total_value_at_sale = (
-            early_repayment_metrics.proceeds_minus_debt +
+            property_proceeds_after_tax +
             portfolio_metrics.portfolio_after_tax
         )
         
-        # Total profit
+        # Total profit = property profit (after all taxes) + portfolio profit
+        # Purchase tax reduces initial investment, capital gains tax reduces sale proceeds
         total_profit = (
-            early_repayment_metrics.net_gain_property +
+            tax_metrics.net_profit_after_taxes +
             portfolio_metrics.net_portfolio_profit
         )
         
@@ -449,6 +526,7 @@ class ScenarioCalculator:
             appreciation_metrics=appreciation_metrics,
             early_repayment_metrics=early_repayment_metrics,
             portfolio_metrics=portfolio_metrics,
+            tax_metrics=tax_metrics,
             total_value_at_sale=total_value_at_sale,
             total_profit=total_profit,
             annual_return=annual_return,

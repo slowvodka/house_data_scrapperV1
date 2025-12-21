@@ -10,6 +10,7 @@ from mortgage_return_scenario_calculator import (
     InvestmentAssumptions,
     InvestmentRestrictions,
 )
+from mortgage_return_scenario_calculator.models import TaxMetrics
 
 
 pytestmark = pytest.mark.calculator
@@ -402,6 +403,162 @@ class TestFullCalculation:
         assert result.portfolio_metrics is not None
         assert result.total_value_at_sale > 0
         assert result.total_profit != 0  # Could be positive or negative
+    
+    def test_result_includes_tax_metrics(self):
+        """Test that ScenarioResult includes tax_metrics."""
+        inputs = ScenarioInputs(
+            property_price=2_000_000,
+            down_payment=1_000_000,
+            available_cash=2_000_000,
+            monthly_income=50_000,
+            monthly_available=10_000,
+            mortgage_term_years=10,
+            years_until_sale=10,
+        )
+        calculator = ScenarioCalculator(inputs)
+        result = calculator.calculate()
+        
+        assert isinstance(result.tax_metrics, TaxMetrics)
+        assert result.tax_metrics.purchase_tax >= 0
+        assert result.tax_metrics.purchase_tax_rate >= 0
+        assert result.tax_metrics.capital_gains_tax >= 0
+        assert result.tax_metrics.total_taxes >= 0
+    
+    def test_tax_metrics_first_house(self):
+        """Test tax metrics for first house scenario."""
+        inputs = ScenarioInputs(
+            property_price=2_000_000,
+            down_payment=1_000_000,
+            available_cash=2_000_000,
+            monthly_income=50_000,
+            monthly_available=10_000,
+            mortgage_term_years=10,
+            years_until_sale=10,
+            is_first_house=True,
+        )
+        calculator = ScenarioCalculator(inputs)
+        result = calculator.calculate()
+        
+        # First house should have lower purchase tax than additional property
+        assert result.tax_metrics.purchase_tax > 0
+        assert result.tax_metrics.purchase_tax_rate < 0.08  # Less than 8%
+    
+    def test_tax_metrics_additional_property(self):
+        """Test tax metrics for additional property scenario."""
+        inputs = ScenarioInputs(
+            property_price=2_000_000,
+            down_payment=1_000_000,
+            available_cash=2_000_000,
+            monthly_income=50_000,
+            monthly_available=10_000,
+            mortgage_term_years=10,
+            years_until_sale=10,
+            is_first_house=False,  # Additional property
+        )
+        calculator = ScenarioCalculator(inputs)
+        result = calculator.calculate()
+        
+        # Additional property should have higher purchase tax
+        assert result.tax_metrics.purchase_tax > 0
+        # Should be around 8% for 2M property
+        assert abs(result.tax_metrics.purchase_tax_rate - 0.08) < 0.001
+    
+    def test_tax_metrics_with_improvements(self):
+        """Test tax metrics with improvement costs."""
+        inputs = ScenarioInputs(
+            property_price=2_000_000,
+            down_payment=1_000_000,
+            available_cash=2_000_000,
+            monthly_income=50_000,
+            monthly_available=10_000,
+            mortgage_term_years=10,
+            years_until_sale=10,
+            improvement_costs=200_000,
+        )
+        calculator = ScenarioCalculator(inputs)
+        result = calculator.calculate()
+        
+        # Capital gains should account for improvements
+        assert result.tax_metrics.capital_gains >= 0
+        # Capital gains tax should be lower with improvements
+        assert result.tax_metrics.capital_gains_tax >= 0
+    
+    def test_total_profit_includes_taxes(self):
+        """Test that total_profit accounts for taxes."""
+        inputs = ScenarioInputs(
+            property_price=2_000_000,
+            down_payment=1_000_000,
+            available_cash=2_000_000,
+            monthly_income=50_000,
+            monthly_available=10_000,
+            mortgage_term_years=10,
+            years_until_sale=10,
+        )
+        calculator = ScenarioCalculator(inputs)
+        result = calculator.calculate()
+        
+        # Total profit should be less than property profit + portfolio profit
+        # because taxes are deducted
+        property_profit = result.early_repayment_metrics.net_gain_property
+        portfolio_profit = result.portfolio_metrics.net_portfolio_profit
+        profit_before_tax = property_profit + portfolio_profit
+        
+        # Total profit should be profit_before_tax minus taxes
+        expected_profit = profit_before_tax - result.tax_metrics.total_taxes
+        assert abs(result.total_profit - expected_profit) < 0.01
+    
+    def test_calculate_taxes_method(self):
+        """Test calculate_taxes() method directly."""
+        inputs = ScenarioInputs(
+            property_price=2_000_000,
+            down_payment=1_000_000,
+            available_cash=2_000_000,
+            monthly_income=50_000,
+            monthly_available=10_000,
+            mortgage_term_years=10,
+            years_until_sale=10,
+        )
+        calculator = ScenarioCalculator(inputs)
+        
+        # Calculate all metrics needed for tax calculation
+        loan_metrics = calculator.calculate_loan_metrics()
+        cash_flow_metrics = calculator.calculate_cash_flow(loan_metrics)
+        appreciation_metrics = calculator.calculate_appreciation(loan_metrics, cash_flow_metrics)
+        early_repayment_metrics = calculator.calculate_early_repayment(loan_metrics, appreciation_metrics)
+        
+        # Calculate taxes
+        tax_metrics = calculator.calculate_taxes(appreciation_metrics, early_repayment_metrics)
+        
+        assert isinstance(tax_metrics, TaxMetrics)
+        assert tax_metrics.purchase_tax >= 0
+        assert tax_metrics.capital_gains_tax >= 0
+        assert tax_metrics.total_taxes == tax_metrics.purchase_tax + tax_metrics.capital_gains_tax
+        assert tax_metrics.net_profit_after_taxes == (
+            early_repayment_metrics.net_gain_property - tax_metrics.total_taxes
+        )
+    
+    def test_tax_impact_on_profit(self):
+        """Test that taxes reduce total profit."""
+        inputs = ScenarioInputs(
+            property_price=5_000_000,
+            down_payment=1_000_000,
+            available_cash=1_500_000,
+            monthly_income=100_000,
+            monthly_available=30_000,
+            mortgage_term_years=25,
+            years_until_sale=15,
+            is_first_house=True,
+        )
+        calculator = ScenarioCalculator(inputs)
+        result = calculator.calculate()
+        
+        # Verify taxes are significant for 5M property
+        assert result.tax_metrics.purchase_tax > 100_000  # Should be substantial
+        assert result.tax_metrics.total_taxes > 0
+        
+        # Verify profit is reduced by taxes
+        property_profit_before_tax = result.early_repayment_metrics.net_gain_property
+        assert result.tax_metrics.net_profit_after_taxes < property_profit_before_tax
     
     def test_specific_scenario(self):
         """Test specific scenario matching user requirements."""

@@ -61,6 +61,10 @@ class ScenarioInputs:
         mortgage_term_years: Duration of mortgage in years.
         years_until_sale: Number of years until property will be sold.
         urban_renewal_value: Optional added value from urban renewal (max 400,000).
+        is_first_house: True if this is the buyer's first house (דירה יחידה),
+            False if it's an additional property (דירה נוספת). Default True.
+        improvement_costs: Costs of improvements made to property (deductible
+            from capital gains tax). Default 0.0.
     """
     
     # Property details
@@ -81,6 +85,10 @@ class ScenarioInputs:
     # Optional
     urban_renewal_value: float = 0.0
     
+    # Tax-related fields
+    is_first_house: bool = True  # True for first house (דירה יחידה), False for additional property
+    improvement_costs: float = 0.0  # Costs of improvements (deductible from capital gains)
+    
     def __post_init__(self) -> None:
         """Validate and cap values after initialization."""
         # Cap urban renewal value at 400,000
@@ -99,6 +107,8 @@ class ScenarioInputs:
             raise ValueError("years_until_sale must be positive")
         if self.monthly_income <= 0:
             raise ValueError("monthly_income must be positive")
+        if self.improvement_costs < 0:
+            raise ValueError("improvement_costs cannot be negative")
     
     def calculate_monthly_rent(self, rental_yield: float) -> float:
         """Calculate monthly rent from property price and rental yield.
@@ -238,6 +248,26 @@ class EarlyRepaymentMetrics:
 
 
 @dataclass
+class TaxMetrics:
+    """Tax-related calculations for the investment scenario.
+    
+    Attributes:
+        purchase_tax: Purchase tax (מס רכישה) paid when buying property.
+        purchase_tax_rate: Effective purchase tax rate.
+        capital_gains: Capital gain from property sale.
+        capital_gains_tax: Capital gains tax (מס שבח) paid when selling.
+        total_taxes: Total taxes paid (purchase + capital gains).
+        net_profit_after_taxes: Net profit after all taxes.
+    """
+    purchase_tax: float
+    purchase_tax_rate: float
+    capital_gains: float
+    capital_gains_tax: float
+    total_taxes: float
+    net_profit_after_taxes: float
+
+
+@dataclass
 class PortfolioMetrics:
     """Alternative investment portfolio metrics.
     
@@ -277,8 +307,9 @@ class ScenarioResult:
         appreciation_metrics: Calculated appreciation metrics.
         early_repayment_metrics: Early repayment metrics.
         portfolio_metrics: Alternative investment metrics.
+        tax_metrics: Tax-related calculations (purchase tax and capital gains tax).
         total_value_at_sale: Total value at time of sale.
-        total_profit: Total profit from investment.
+        total_profit: Total profit from investment (after taxes).
         annual_return: Annualized return rate.
         is_valid: Whether the scenario passes all restrictions.
         validation_errors: List of validation error messages.
@@ -291,6 +322,7 @@ class ScenarioResult:
     appreciation_metrics: AppreciationMetrics
     early_repayment_metrics: EarlyRepaymentMetrics
     portfolio_metrics: PortfolioMetrics
+    tax_metrics: TaxMetrics
     
     # Final summary
     total_value_at_sale: float

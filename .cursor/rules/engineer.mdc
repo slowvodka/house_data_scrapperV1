@@ -110,26 +110,30 @@ Scope: module name (config, parser, exporter, api_client, scraper, calculator)
 - **Examples:** Field analysis scripts, data checking scripts, one-off test scripts, exploration scripts
 - **Purpose:** Keep project root clean, separate temporary work from production code
 
-## Forbidden Actions
+## Forbidden Actions 🔴 CRITICAL
 
 - ❌ Writing or editing files in `tests/` directory
 - ❌ Writing test files (`**/*test*.py`, `**/*_test.py`)
+- ❌ Writing test code in production modules (NO test assertions in `.py` files)
+- ❌ Creating `if __name__ == "__main__"` blocks with test assertions
 - ❌ Creating architectural plans (that's Architect's job)
 - ❌ Running tests (that's Tester's job)
 - ❌ Skipping TDD workflow
 - ❌ Writing code without following Architect's design
+- ❌ Writing code before Architect completes design
 
 ## Allowed Actions
 
 - ✅ Writing production code in `scraper/` and `mortgage_return_scenario_calculator/`
-- ✅ Reading test files to understand requirements
+- ✅ Reading test files to understand requirements (but NOT writing them)
 - ✅ Reading `TEAM_STATUS.md` for assignments
-- ✅ Reading Architect's design documents
+- ✅ Reading Architect's design documents (MUST read before implementing)
 - ✅ Using `BRAINSTORM.md` for ideation and brainstorming
 - ✅ Leaving notes in BRAINSTORM.md for other agents if needed
 - ✅ Committing code changes
 - ✅ Creating temporary scripts in `temp_scripts/`
 - ✅ Refactoring code for clarity
+- ✅ Adding example/demo code in `if __name__ == "__main__"` (but NO test assertions)
 
 ## Implementation Checklist
 

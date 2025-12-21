@@ -13,6 +13,7 @@ from mortgage_return_scenario_calculator.models import (
     AppreciationMetrics,
     EarlyRepaymentMetrics,
     PortfolioMetrics,
+    TaxMetrics,
     ScenarioResult,
 )
 
@@ -71,6 +72,8 @@ class TestScenarioInputs:
         assert inputs.monthly_income == 30_000
         assert inputs.mortgage_term_years == 10
         assert inputs.urban_renewal_value == 0.0  # Default
+        assert inputs.is_first_house is True  # Default should be True
+        assert inputs.improvement_costs == 0.0  # Default should be 0.0
     
     def test_urban_renewal_cap(self):
         """Test urban renewal value is capped at 400,000."""
@@ -324,6 +327,7 @@ class TestScenarioResult:
             appreciation_metrics=appreciation,
             early_repayment_metrics=early_repay,
             portfolio_metrics=portfolio,
+            tax_metrics=TaxMetrics(0, 0, 0, 0, 0, 0),
             total_value_at_sale=0,
             total_profit=0,
             annual_return=0,
@@ -331,4 +335,87 @@ class TestScenarioResult:
         
         assert result.is_valid is True
         assert result.validation_errors == []
+
+
+class TestTaxMetrics:
+    """Tests for TaxMetrics dataclass."""
+    
+    def test_tax_metrics_creation(self):
+        """Test TaxMetrics can be created with valid values."""
+        tax_metrics = TaxMetrics(
+            purchase_tax=100_000,
+            purchase_tax_rate=0.05,
+            capital_gains=500_000,
+            capital_gains_tax=125_000,
+            total_taxes=225_000,
+            net_profit_after_taxes=275_000,
+        )
+        
+        assert tax_metrics.purchase_tax == 100_000
+        assert tax_metrics.purchase_tax_rate == 0.05
+        assert tax_metrics.capital_gains == 500_000
+        assert tax_metrics.capital_gains_tax == 125_000
+        assert tax_metrics.total_taxes == 225_000
+        assert tax_metrics.net_profit_after_taxes == 275_000
+    
+    def test_tax_metrics_total_taxes_calculation(self):
+        """Test that total_taxes equals purchase_tax + capital_gains_tax."""
+        tax_metrics = TaxMetrics(
+            purchase_tax=50_000,
+            purchase_tax_rate=0.025,
+            capital_gains=200_000,
+            capital_gains_tax=50_000,
+            total_taxes=100_000,
+            net_profit_after_taxes=150_000,
+        )
+        
+        assert tax_metrics.total_taxes == tax_metrics.purchase_tax + tax_metrics.capital_gains_tax
+
+
+class TestScenarioInputsTaxFields:
+    """Tests for tax-related fields in ScenarioInputs."""
+    
+    def test_is_first_house_field(self):
+        """Test is_first_house field can be set."""
+        inputs = ScenarioInputs(
+            property_price=2_000_000,
+            down_payment=1_000_000,
+            available_cash=2_000_000,
+            monthly_income=30_000,
+            monthly_available=10_000,
+            mortgage_term_years=10,
+            years_until_sale=10,
+            is_first_house=False,
+        )
+        
+        assert inputs.is_first_house is False
+    
+    def test_improvement_costs_field(self):
+        """Test improvement_costs field can be set."""
+        inputs = ScenarioInputs(
+            property_price=2_000_000,
+            down_payment=1_000_000,
+            available_cash=2_000_000,
+            monthly_income=30_000,
+            monthly_available=10_000,
+            mortgage_term_years=10,
+            years_until_sale=10,
+            improvement_costs=200_000,
+        )
+        
+        assert inputs.improvement_costs == 200_000
+    
+    def test_improvement_costs_validation(self):
+        """Test improvement_costs cannot be negative."""
+        with pytest.raises(ValueError, match="improvement_costs cannot be negative"):
+            ScenarioInputs(
+                property_price=2_000_000,
+                down_payment=1_000_000,
+                available_cash=2_000_000,
+                monthly_income=30_000,
+                monthly_available=10_000,
+                mortgage_term_years=10,
+                years_until_sale=10,
+                improvement_costs=-100_000,
+            )
 
