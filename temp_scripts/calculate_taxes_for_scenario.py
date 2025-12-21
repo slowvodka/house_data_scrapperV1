@@ -96,7 +96,7 @@ for is_first in [True, False]:
     print(f"  Adjusted Profit: {7_702_823 - total_taxes_comp:,.0f} ILS")
 
 print("\n" + "=" * 80)
-print("NOTE: Tax integration into ScenarioResult is pending implementation.")
-print("See: docs/architecture/tax_integration_design.md")
+print("NOTE: Tax integration is now complete!")
+print("Taxes are automatically calculated in ScenarioResult.total_profit")
 print("=" * 80)
 
