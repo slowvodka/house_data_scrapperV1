@@ -4,6 +4,7 @@ from mortgage_return_scenario_calculator.models import (
     InvestmentAssumptions,
     ScenarioInputs,
     InvestmentRestrictions,
+    ScenarioResult,
 )
 from mortgage_return_scenario_calculator.calculator import ScenarioCalculator
 from mortgage_return_scenario_calculator.config_generator import ConfigGenerator
@@ -16,6 +17,7 @@ __all__ = [
     "InvestmentAssumptions",
     "ScenarioInputs",
     "InvestmentRestrictions",
+    "ScenarioResult",
     "ScenarioCalculator",
     "ConfigGenerator",
     "ScenarioExporter",

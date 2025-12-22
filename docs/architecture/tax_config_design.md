@@ -331,3 +331,4 @@ function calculate_capital_gains_tax(sale_price, purchase_price, purchase_tax_pa
 **Date:** 2025-12-20  
 **Version:** 1.0
 
+
